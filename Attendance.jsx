@@ -7,7 +7,7 @@ export default function WebViewComponent() {
   return (
     <SafeAreaView style={styles.container}>
       <WebView
-        source={{ uri: 'https://script.google.com/macros/s/AKfycbwpPB88QFFlHOp5eVA1FygHnRIsZ2JmPmiBO4RD0MAAO23t8onBr_lItVjDBt-1mVoc/exec' }}
+        source={{ uri: 'https://script.google.com/macros/s/AKfycbxwHmfDg1ruo3KPE6rtwdOdM7XARsMapFtmGVDcGtPdXmmhSoUO5snnnxTWtZ_CyXpwpQ/exec' }}
         style={styles.webview}
       />
     </SafeAreaView>
