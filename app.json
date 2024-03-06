@@ -24,7 +24,10 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.everboltit.everboltapp"
+      "package": "com.everboltit.everboltapp",
+      "permissions": [
+        "WRITE_CONTACTS"
+      ]
     },
     "web": {
       "favicon": "./assets/icon.png"

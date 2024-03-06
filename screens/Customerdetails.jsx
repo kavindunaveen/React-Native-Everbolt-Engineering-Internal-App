@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Dimensions, Alert, KeyboardAvoidingView, Platform } from 'react-native'; // Import Platform here
-
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Dimensions, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import * as Contacts from 'expo-contacts';
 
 export default function Customerdetails() {
@@ -13,16 +12,36 @@ export default function Customerdetails() {
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
 
+  // Format phone number as "071 370 2074"
+  const formatPhoneNumber = (input) => {
+    const cleaned = ('' + input).replace(/\D/g, '');
+    const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+    if (match) {
+      return match[1] + ' ' + match[2] + ' ' + match[3];
+    }
+    return input;
+  };
+
+  const handleChangeNumber = (input) => {
+    const formattedNumber = formatPhoneNumber(input);
+    setNumber(formattedNumber);
+  };
+
   async function Submit() {
     // Validation check
     if (name.trim() === '' || number.trim() === '') {
-      Alert.alert('Error', 'Please fill in all required fields.');
+      Alert.alert('Error', 'Name and Phone Number are required fields.');
+      return;
+    }
+
+    if (!/^\d{10}$/.test(number.trim().replace(/\s/g, ''))) {
+      Alert.alert('Error', 'Phone Number must be a 10-digit number.');
       return;
     }
 
     const contact = {
       [Contacts.Fields.FirstName]: name,
-      [Contacts.Fields.PhoneNumbers]: [{ number: number }],
+      [Contacts.Fields.PhoneNumbers]: [{ number: number.replace(/\s/g, '') }],
       [Contacts.Fields.Emails]: [{ email: address }],
       [Contacts.Fields.Note]: other,
     };
@@ -48,7 +67,7 @@ export default function Customerdetails() {
         // Post data to Google Sheets
         const formData = new FormData();
         formData.append('Name', name);
-        formData.append('Number', number);
+        formData.append('Number', number.replace(/\s/g, ''));
         formData.append('Address', address);
         formData.append('Other', other);
 
@@ -57,6 +76,8 @@ export default function Customerdetails() {
           body: formData
         })
         .then(response => response.json())
+        .then(data => console.log(data)) // Log response from Google Sheets
+        .catch(error => console.error('Error posting to Google Sheets:', error));
       } else {
         console.log('Permission to access contacts denied');
       }
@@ -68,8 +89,8 @@ export default function Customerdetails() {
   return (
     <KeyboardAvoidingView 
       style={{ flex: 1 }} 
-      behavior={Platform.OS === "ios" ? "padding" : null} // Adjusted behavior for iOS
-      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -300} // Adjusted offset for Android
+      behavior={Platform.OS === "ios" ? "padding" : null} 
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -300} 
     >
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Enter Customer Details</Text>
@@ -84,7 +105,8 @@ export default function Customerdetails() {
             style={styles.input} 
             placeholder="Phone Number" 
             value={number} 
-            onChangeText={text => setNumber(text)} 
+            onChangeText={handleChangeNumber} 
+            keyboardType="phone-pad" // Set keyboardType to "phone-pad"
           />
           <TextInput 
             style={styles.input} 

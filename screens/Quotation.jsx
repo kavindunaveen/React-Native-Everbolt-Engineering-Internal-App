@@ -7,7 +7,7 @@ export default function WebViewComponent() {
   return (
     <SafeAreaView style={styles.container}>
       <WebView
-        source={{ uri: 'https://forms.gle/dcXK2H8QtKqobDpu8' }}
+        source={{ uri: 'https://docs.google.com/forms/d/e/1FAIpQLSf2fZwhYEvagVoSB9K_92J39dXsxNSw8EWEeICNcuHP21ZU-A/viewform' }}
         style={styles.webview}
       />
     </SafeAreaView>
