@@ -45,6 +45,19 @@ function HomeScreen() {
         >
           <Text style={styles.buttonText}>Complain</Text>
         </TouchableOpacity>
+        
+      </View>
+
+      <View style={styles.row}>
+        <TouchableOpacity
+          style={[styles.button, styles.marginRight]}
+          onPress={() => navigateToScreen('Meeting')}
+        >
+          <Text style={styles.buttonText}>Meeting </Text>
+          <Text style={styles.buttonText}>Room</Text>
+        </TouchableOpacity>
+
+        
       </View>
     </View>
   );
