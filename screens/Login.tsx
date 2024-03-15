@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -11,13 +13,28 @@ const Login = () => {
     const auth = FIREBASE_AUTH;
     const navigation = useNavigation();
 
+    useEffect(() => {
+        // Set Firebase Auth persistence with AsyncStorage
+        const initializeFirebaseAuth = async () => {
+            try {
+                const persistence = getReactNativePersistence(AsyncStorage);
+                await setPersistence(auth, persistence);
+                console.log("Authentication Persistence Enabled");
+            } catch (error) {
+                console.log("Error setting persistence: ", error);
+            }
+        };
+
+        initializeFirebaseAuth();
+    }, []); // This effect runs only once after component mounts
+
     const signIn = async () => {
         setLoading(true);
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
             console.log(response);
             // Navigate to the homepage after successful sign-in
-            navigation.navigate('Homescreen'); 
+            navigation.navigate('Homescreen');  
         } catch (error) {
             console.log(error);
             alert('Sign In failed: ' + error.message);
@@ -25,7 +42,7 @@ const Login = () => {
             setLoading(false);
         }
     }
-
+      
     const signUp = async () => {
         setLoading(true);
         try {
