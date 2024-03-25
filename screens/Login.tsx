@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity, KeyboardAvoidingView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { setPersistence, browserLocalPersistence } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
@@ -73,6 +73,7 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
       <KeyboardAvoidingView behavior="padding">
         <TextInput value={email} style={styles.input} placeholder="Email" autoCapitalize='none' onChangeText={(text) => setEmail(text)} />
         <TextInput secureTextEntry={true} value={password} style={styles.input} placeholder="Password" autoCapitalize='none' onChangeText={(text) => setPassword(text)} />
@@ -83,9 +84,11 @@ const Login = () => {
               <TouchableOpacity style={styles.loginButton} onPress={signIn}>
                 <Text style={styles.buttonText}>Login</Text>
               </TouchableOpacity>
+              {/* 
               <TouchableOpacity style={styles.createAccountButton} onPress={signUp}>
                 <Text style={styles.buttonText}>Create Account</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> 
+              */}
             </View>
           )}
       </KeyboardAvoidingView>
@@ -100,6 +103,13 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         flex: 1,
         justifyContent: 'center',
+    },
+    logo: {
+        width: 170,
+        height: 50,
+        marginBottom: 70,
+        alignSelf: 'center',
+        
     },
     input: {
         marginVertical: 4,

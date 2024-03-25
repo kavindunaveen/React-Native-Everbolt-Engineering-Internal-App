@@ -64,7 +64,7 @@ export default function Customerdetails() {
       keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -300} 
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Complaint Form</Text>
+        <Text style={styles.title}>Complain Form</Text>
 
         <View style={styles.form}>
 
@@ -89,7 +89,7 @@ export default function Customerdetails() {
               onValueChange={(itemValue, itemIndex) =>
                 setComplaintType(itemValue)
               }>
-              <Picker.Item label="Complaint Type" value="" />
+              <Picker.Item label="Complain Type" value="" />
               <Picker.Item label="Item Mismatch" value="Item Mismatch" /> 
               <Picker.Item label="PO Expire" value="PO Expire" />
               <Picker.Item label="Item Damage" value="Item Damage" />
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   dropdown: {
-    borderColor: '#ddd',
+    borderColor: '#fff',
     borderWidth: 20,
     borderRadius: 5,
     marginBottom: 20,

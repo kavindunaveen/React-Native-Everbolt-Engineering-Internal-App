@@ -71,18 +71,24 @@ export default function Customerdetails() {
         formData.append('Address', address);
         formData.append('Other', other);
 
-        fetch('https://script.google.com/macros/s/AKfycbwfU9PGRH_keOfwPDevLH8IXjtSbOGLtNBeTildT4GPo4sN2_xv_ekdhBvC-xziz4ip/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwfU9PGRH_keOfwPDevLH8IXjtSbOGLtNBeTildT4GPo4sN2_xv_ekdhBvC-xziz4ip/exec', {
           method: 'POST',
           body: formData
-        })
-        .then(response => response.json())
-        .then(data => console.log(data)) // Log response from Google Sheets
-        .catch(error => console.error('Error posting to Google Sheets:', error));
+        });
+
+        if (response.ok) {
+          console.log('Data submitted successfully');
+          // Log response from Google Sheets
+          const data = await response.json();
+          console.log(data);
+        } else {
+          console.error('Failed to submit data:', response.statusText);
+        }
       } else {
         console.log('Permission to access contacts denied');
       }
     } catch (error) {
-      console.error('Error adding contact:', error);
+      console.error('Error:', error);
     }
   }
 
@@ -123,7 +129,8 @@ export default function Customerdetails() {
           />
           <TouchableOpacity style={styles.button} onPress={Submit}>
             <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
+         
+            </TouchableOpacity>
         </View>
         {showSuccessModal && (
           <View style={[styles.successModal, {top: (screenHeight - 100) / 2, left: (screenWidth - 250) / 2}]}>
