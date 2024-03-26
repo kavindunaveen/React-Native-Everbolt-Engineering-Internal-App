@@ -18,6 +18,10 @@ function HomeScreen() {
     Linking.openURL('https://script.google.com/macros/s/AKfycbxwHmfDg1ruo3KPE6rtwdOdM7XARsMapFtmGVDcGtPdXmmhSoUO5snnnxTWtZ_CyXpwpQ/exec');
   };
 
+  const openMarkVisitURL = () => {
+    Linking.openURL('https://script.google.com/macros/s/AKfycbzgtdNk9agXuVPc6oU0L5JNtZ1ZBQ3Qjd67ms94SYCcTBuHG8uKYpeIMAQ2wsD26gmFng/exec');
+  };
+
   const handleLogout = async () => {
     try {
       // Clear login status from AsyncStorage
@@ -50,6 +54,7 @@ function HomeScreen() {
           <Text style={styles.buttonText}>Quotation</Text>
         </TouchableOpacity>
       </View>
+      
 
       <View style={styles.row}>
         <TouchableOpacity
@@ -76,12 +81,19 @@ function HomeScreen() {
           <Text style={styles.buttonText}>Meeting </Text>
           <Text style={styles.buttonText}>Room</Text>
         </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.button, styles.marginRight]}
+          onPress={openMarkVisitURL}
+        >
+          <Text style={styles.buttonText}>Visit</Text>
+          <Text style={styles.buttonText}>Mark</Text>
+        </TouchableOpacity>
       </View>
 
-
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+     {/*<TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
+      </TouchableOpacity>*/ } 
     </View>
   );
 }
