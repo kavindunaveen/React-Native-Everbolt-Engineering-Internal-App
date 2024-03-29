@@ -1,7 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, Linking } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Linking, Animated, Easing, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Correct import statement
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { FontAwesome5 } from '@expo/vector-icons';
+
+const { width } = Dimensions.get('window');
 
 function HomeScreen() {
   const navigation = useNavigation();
@@ -24,76 +27,99 @@ function HomeScreen() {
 
   const handleLogout = async () => {
     try {
-      // Clear login status from AsyncStorage
       await AsyncStorage.removeItem('isLoggedIn');
-      // Navigate back to the login screen
       navigation.navigate('Login');
     } catch (error) {
       console.error('Error logging out:', error);
-      // Handle any errors that occur during logout
-      // You may want to display an error message to the user
     }
+  };
+
+  const buttonScale = new Animated.Value(1);
+
+  const animateButton = () => {
+    Animated.sequence([
+      Animated.timing(buttonScale, {
+        toValue: 0.8,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+      Animated.timing(buttonScale, {
+        toValue: 1,
+        duration: 100,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    ]).start();
   };
 
   return (
     <View style={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
-
+      
       <View style={styles.row}>
         <TouchableOpacity
-          style={[styles.button, styles.marginRight]}
+          style={styles.button}
           onPress={openAttendanceURL}
+          onPressIn={animateButton}
         >
+          <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Attendance</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, styles.marginLeft]}
+          style={styles.button}
           onPress={() => navigateToScreen('Quotation')}
+          onPressIn={animateButton}
         >
+          <FontAwesome5 name="file-invoice-dollar" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Quotation</Text>
         </TouchableOpacity>
       </View>
-      
 
       <View style={styles.row}>
         <TouchableOpacity
-          style={[styles.button, styles.marginRight]}
+          style={styles.button}
           onPress={() => navigateToScreen('Customerdetails')}
+          onPressIn={animateButton}
         >
-          <Text style={styles.buttonText}>Customer </Text>
-          <Text style={styles.buttonText}>Details</Text>
+          <FontAwesome5 name="user-friends" size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>Customer Details</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, styles.marginLeft]}
+          style={styles.button}
           onPress={() => navigateToScreen('Complain')}
+          onPressIn={animateButton}
         >
+          <FontAwesome5 name="exclamation-triangle" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Complain</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.row}>
         <TouchableOpacity
-          style={[styles.button, styles.marginRight]}
+          style={styles.button}
           onPress={openMeetingRoom}
+          onPressIn={animateButton}
         >
-          <Text style={styles.buttonText}>Meeting </Text>
-          <Text style={styles.buttonText}>Room</Text>
+          <FontAwesome5 name="calendar-alt" size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>Meeting Room</Text>
         </TouchableOpacity>
         
         <TouchableOpacity
-          style={[styles.button, styles.marginRight]}
+          style={styles.button}
           onPress={openMarkVisitURL}
+          onPressIn={animateButton}
         >
-          <Text style={styles.buttonText}>Visit</Text>
-          <Text style={styles.buttonText}>Mark</Text>
+          <FontAwesome5 name="marker" size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>Visit Mark</Text>
         </TouchableOpacity>
       </View>
 
-     {/*<TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+     {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>*/ } 
+      </TouchableOpacity> */}
     </View>
   );
 }
@@ -106,44 +132,40 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A3819',
   },
   logo: {
-    width: 200,
-    height: 100,
+    width: width * 0.6,
+    height: width * 0.3,
     resizeMode: 'contain',
-    marginBottom: 30,
-    marginTop: -50,
+    marginBottom: 20,
   },
   row: {
     flexDirection: 'row',
     marginBottom: 20,
   },
   button: {
-    width: 130,
-    height: 130,
-    backgroundColor: 'white',
+    width: 120,
+    height: 120,
+    marginHorizontal: 10,
+    borderRadius: 15,
+    backgroundColor: '#4CAF50',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
+    elevation: 5,
   },
   buttonText: {
-    color: 'black',
-    fontWeight: 'bold',
+    color: '#FFFFFF',
     fontSize: 16,
-  },
-  marginRight: {
-    marginRight: 10,
-  },
-  marginLeft: {
-    marginLeft: 10,
+    marginTop: 5,
+    textAlign: 'center',
   },
   logoutButton: {
-    marginBottom: -80,
+    marginTop: 20,
     paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 30,
     borderRadius: 50,
+    backgroundColor: '#2A2A2A',
   },
   logoutButtonText: {
     color: 'white',
-    fontWeight:'normal',
     fontSize: 16,
   },
 });
