@@ -71,7 +71,7 @@ export default function Customerdetails() {
         formData.append('Address', address);
         formData.append('Other', other);
 
-        const response = await fetch('https://script.google.com/macros/s/AKfycbwfU9PGRH_keOfwPDevLH8IXjtSbOGLtNBeTildT4GPo4sN2_xv_ekdhBvC-xziz4ip/exec', {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbyjswGygWigqWsKafhAtMmY-ZIEmn3n8-8N04fnOjOPi-1sl0cfcx2xqhn9a4Z29zo-5g/exec', {
           method: 'POST',
           body: formData
         });
