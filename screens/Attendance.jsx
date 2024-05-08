@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet, Button, Linking } from 'react-native';
 
 export default function WebViewComponent() {
   const openAttendanceURL = () => {
-    const attendanceURL = 'https://script.google.com/macros/s/AKfycbxwHmfDg1ruo3KPE6rtwdOdM7XARsMapFtmGVDcGtPdXmmhSoUO5snnnxTWtZ_CyXpwpQ/exec';
+    const attendanceURL = 'https://script.google.com/macros/s/AKfycbybQPlGuIO13nISRQnTMmYtetFrAcEfHJ4TWkilVOuDxcqfbDREEJAp78GSHjxmNhHH/exec';
     Linking.openURL(attendanceURL);
   };
 

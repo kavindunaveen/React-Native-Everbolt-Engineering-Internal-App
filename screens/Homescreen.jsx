@@ -18,11 +18,16 @@ function HomeScreen() {
   };
 
   const openAttendanceURL = () => {
-    Linking.openURL('https://script.google.com/macros/s/AKfycbxwHmfDg1ruo3KPE6rtwdOdM7XARsMapFtmGVDcGtPdXmmhSoUO5snnnxTWtZ_CyXpwpQ/exec');
+    Linking.openURL('https://script.google.com/macros/s/AKfycby7WLW4XbLcI2X06_WtSmMeBwUnLuJEwEugsav-mF2qrzh4U0jQ20529rUbcn8w6V3mQw/exec');
   };
 
   const openMarkVisitURL = () => {
-    Linking.openURL('https://script.google.com/macros/s/AKfycbzgtdNk9agXuVPc6oU0L5JNtZ1ZBQ3Qjd67ms94SYCcTBuHG8uKYpeIMAQ2wsD26gmFng/exec');
+    Linking.openURL('https://script.google.com/macros/s/AKfycbybQPlGuIO13nISRQnTMmYtetFrAcEfHJ4TWkilVOuDxcqfbDREEJAp78GSHjxmNhHH/exec');
+  }; 
+    
+  
+  const openTransportURL = () => {
+    Linking.openURL('');
   };
 
   const handleLogout = async () => {
@@ -115,7 +120,29 @@ function HomeScreen() {
           <FontAwesome5 name="marker" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Visit Mark</Text>
         </TouchableOpacity>
+        
       </View>
+
+     {/* <View style={styles.row}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={openTransportURL}
+          onPressIn={animateButton}
+        >
+          <FontAwesome5 name="car" size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>Transport</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigateToScreen('bookingForm')}
+          onPressIn={animateButton}
+        >
+          <FontAwesome5 name="exclamation-triangle" size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>test</Text>
+        </TouchableOpacity>
+        
+      </View> */}
 
      {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>

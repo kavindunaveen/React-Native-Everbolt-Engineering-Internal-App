@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import axios from 'axios';
 
 import Homescreen from './screens/Homescreen'; 
 import Attendace from './screens/Attendance';
@@ -12,6 +13,7 @@ import Complain from './screens/Complain';
 import Login from './screens/Login';
 import Meeting from './screens/Meeting';
 import MarkVisit from './screens/MarkVisit';
+import bookingForm from './vehicleBooking/bookingForm';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 
@@ -55,6 +57,7 @@ function App() {
         <Stack.Screen name="Complain" component={Complain} options={{ title: '' }} />
         <Stack.Screen name="Meeting" component={Meeting} options={{ title: '' }} />
         <Stack.Screen name="MarkVisit" component={MarkVisit} options={{ title: '' }} />
+        <Stack.Screen name="bookingForm" component={bookingForm} options={{ title: '' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

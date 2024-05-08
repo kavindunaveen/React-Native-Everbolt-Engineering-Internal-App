@@ -3,13 +3,13 @@ import { SafeAreaView, StyleSheet, Button, Linking } from 'react-native';
 
 export default function WebViewComponent() {
   const openMarkVisitURL = () => {
-    const attendanceURL = 'https://script.google.com/macros/s/AKfycbwYfuu3GVf9YfK2IQ2xlJhBiz-E2mYkXYxWKq_AKsnWYv1X3PNsWx-JIaR83Hh2HbIEwQ/exec';
+    const attendanceURL = 'https://script.google.com/macros/s/AKfycbybQPlGuIO13nISRQnTMmYtetFrAcEfHJ4TWkilVOuDxcqfbDREEJAp78GSHjxmNhHH/exec';
     Linking.openURL(attendanceURL);
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Button title="Mark Attendance" onPress={openMarkVisitURL} />
+      <Button title="Visit Mark" onPress={openMarkVisitURL} />
     </SafeAreaView>
   );
 }
@@ -23,3 +23,4 @@ const styles = StyleSheet.create({
   },
 
 });
+ 
