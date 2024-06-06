@@ -11,9 +11,7 @@ import Quotation from './screens/Quotation';
 import Customerdetails from './screens/Customerdetails';
 import Complain from './screens/Complain';
 import Login from './screens/Login';
-import Meeting from './screens/Meeting';
 import MarkVisit from './screens/MarkVisit';
-import bookingForm from './vehicleBooking/bookingForm';
 import { onAuthStateChanged } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 
@@ -55,9 +53,7 @@ function App() {
         <Stack.Screen name="Quotation" component={Quotation} options={{ title: '' }} />
         <Stack.Screen name="Customerdetails" component={Customerdetails} options={{ title: '' }} />
         <Stack.Screen name="Complain" component={Complain} options={{ title: '' }} />
-        <Stack.Screen name="Meeting" component={Meeting} options={{ title: '' }} />
         <Stack.Screen name="MarkVisit" component={MarkVisit} options={{ title: '' }} />
-        <Stack.Screen name="bookingForm" component={bookingForm} options={{ title: '' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

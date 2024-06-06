@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, ActivityIndicator, TouchableOpacity,
 import { useNavigation } from '@react-navigation/native';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { setPersistence, browserLocalPersistence } from 'firebase/auth';
+import { setPersistence } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
@@ -16,7 +16,8 @@ const Login = () => {
   useEffect(() => {
     const initializeFirebaseAuth = async () => {
       try {
-        await setPersistence(auth, browserLocalPersistence);
+        // Set persistence to local for React Native
+        await setPersistence(auth, 'local');
         console.log("Authentication Persistence Enabled");
       } catch (error) {
         console.log("Error setting persistence: ", error);
