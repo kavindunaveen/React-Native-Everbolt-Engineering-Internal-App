@@ -18,7 +18,7 @@ function HomeScreen() {
   };
 
   const openAttendanceURL = () => {
-    Linking.openURL('https://script.google.com/macros/s/AKfycbwEqk5YntoOuhaiL35SdS3E_A4lLci6OcDnrtlwBAqpx9hDafpkMFn0HFmmd1N3YGuImQ/exec');
+    Linking.openURL('https://script.google.com/macros/s/AKfycbxt-qKrLKALc7c90o3YZ8G1mW8rrSecjwBDIi3QQL3sf71UP7HkXKEOrxOPJe2_0pAxSg/exec');
   };
 
   const openMarkVisitURL = () => {
