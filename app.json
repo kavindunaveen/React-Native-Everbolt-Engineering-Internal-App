@@ -3,7 +3,7 @@
     "name": "Everbolt Engineering",
     "slug": "everbolt-app",
     "description": "Everbolt Engineering internal app",
-    "version": "2.0.0",
+    "version": "2.0.1", 
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,7 +20,7 @@
       "bundleIdentifier": "com.everboltit.everboltapp"
     },
     "android": {
-      "versionCode": 2,
+      "versionCode": 3, 
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
@@ -29,7 +29,6 @@
       "permissions": [
         "WRITE_CONTACTS"
       ]
-      
     },
     "web": {
       "favicon": "./assets/icon.png"
