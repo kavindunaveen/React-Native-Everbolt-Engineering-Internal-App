@@ -1,19 +1,17 @@
-import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import axios from 'axios';
+import { onAuthStateChanged } from 'firebase/auth';
+import { FIREBASE_AUTH } from './FirebaseConfig';
 
 import Homescreen from './screens/Homescreen'; 
-import Attendace from './screens/Attendance';
+import Attendance from './screens/Attendance';
 import Quotation from './screens/Quotation';
 import Customerdetails from './screens/Customerdetails';
 import Complain from './screens/Complain';
 import Login from './screens/Login';
 import MarkVisit from './screens/MarkVisit';
-import { onAuthStateChanged } from 'firebase/auth';
-import { FIREBASE_AUTH } from './FirebaseConfig';
 
 function App() {
   const Stack = createNativeStackNavigator();
@@ -40,20 +38,48 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={user ? 'Homescreen' : 'Login'}>
-        <Stack.Screen name="Homescreen" component={Homescreen} options={{ 
-          title: 'Dashboard',
-          headerStyle: {
-            backgroundColor: '#F4BC1C',
-          },
-          headerTintColor: '#fff',
-          headerShown: false,
-        }}/>
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="Attendance" component={Attendace} options={{ title: '' }} />
-        <Stack.Screen name="Quotation" component={Quotation} options={{ title: '' }} />
-        <Stack.Screen name="Customerdetails" component={Customerdetails} options={{ title: '' }} />
-        <Stack.Screen name="Complain" component={Complain} options={{ title: '' }} />
-        <Stack.Screen name="MarkVisit" component={MarkVisit} options={{ title: '' }} />
+        <Stack.Screen 
+          name="Homescreen" 
+          component={Homescreen} 
+          options={{ 
+            title: 'Dashboard',
+            headerStyle: {
+              backgroundColor: '#F4BC1C',
+            },
+            headerTintColor: '#fff',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen 
+          name="Login" 
+          component={Login} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Attendance" 
+          component={Attendance} 
+          options={{ title: '' }} 
+        />
+        <Stack.Screen 
+          name="Quotation" 
+          component={Quotation} 
+          options={{ title: '' }} 
+        />
+        <Stack.Screen 
+          name="Customerdetails" 
+          component={Customerdetails} 
+          options={{ title: '' }} 
+        />
+        <Stack.Screen 
+          name="Complain" 
+          component={Complain} 
+          options={{ title: '' }} 
+        />
+        <Stack.Screen 
+          name="MarkVisit" 
+          component={MarkVisit} 
+          options={{ title: '' }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

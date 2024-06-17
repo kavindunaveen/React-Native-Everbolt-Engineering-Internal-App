@@ -17,17 +17,8 @@ function HomeScreen() {
     Linking.openURL('https://outlook.office365.com/owa/calendar/MeetingRoom@everbolt.lk/bookings/');
   };
 
-  const openAttendanceURL = () => {
-    Linking.openURL('https://script.google.com/macros/s/AKfycbxt-qKrLKALc7c90o3YZ8G1mW8rrSecjwBDIi3QQL3sf71UP7HkXKEOrxOPJe2_0pAxSg/exec');
-  };
-
   const openMarkVisitURL = () => {
     Linking.openURL('https://script.google.com/macros/s/AKfycbybQPlGuIO13nISRQnTMmYtetFrAcEfHJ4TWkilVOuDxcqfbDREEJAp78GSHjxmNhHH/exec');
-  }; 
-    
-  
-  const openTransportURL = () => {
-    Linking.openURL('');
   };
 
   const handleLogout = async () => {
@@ -61,11 +52,11 @@ function HomeScreen() {
   return (
     <View style={styles.container}>
       <Image source={require('../assets/logo.png')} style={styles.logo} />
-      
+
       <View style={styles.row}>
         <TouchableOpacity
           style={styles.button}
-          onPress={openAttendanceURL}
+          onPress={() => navigateToScreen('Attendance')}
           onPressIn={animateButton}
         >
           <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
@@ -111,7 +102,7 @@ function HomeScreen() {
           <FontAwesome5 name="calendar-alt" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Meeting Room</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity
           style={styles.button}
           onPress={openMarkVisitURL}
@@ -120,31 +111,9 @@ function HomeScreen() {
           <FontAwesome5 name="marker" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Visit Mark</Text>
         </TouchableOpacity>
-        
       </View>
 
-     {/* <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={openTransportURL}
-          onPressIn={animateButton}
-        >
-          <FontAwesome5 name="car" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Transport</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigateToScreen('bookingForm')}
-          onPressIn={animateButton}
-        >
-          <FontAwesome5 name="exclamation-triangle" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>test</Text>
-        </TouchableOpacity>
-        
-      </View> */}
-
-     {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity> */}
     </View>
