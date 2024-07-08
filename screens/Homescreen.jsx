@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, Linking, Animated, Easing, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const { width } = Dimensions.get('window');
@@ -21,13 +20,8 @@ function HomeScreen() {
     Linking.openURL('https://script.google.com/macros/s/AKfycbybQPlGuIO13nISRQnTMmYtetFrAcEfHJ4TWkilVOuDxcqfbDREEJAp78GSHjxmNhHH/exec');
   };
 
-  const handleLogout = async () => {
-    try {
-      await AsyncStorage.removeItem('isLoggedIn');
-      navigation.navigate('Login');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
+  const navigateToProfile = () => {
+    navigation.navigate('ProfileScreen'); // Navigate to ProfileScreen
   };
 
   const buttonScale = new Animated.Value(1);
@@ -51,6 +45,10 @@ function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.profileButton} onPress={navigateToProfile}>
+        <FontAwesome5 name="user-circle" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
+
       <Image source={require('../assets/logo.png')} style={styles.logo} />
 
       <View style={styles.row}>
@@ -113,9 +111,16 @@ function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity> */}
+      <View style={styles.row}>
+      <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigateToScreen('Leaveform')}
+          onPressIn={animateButton}
+        >
+          <FontAwesome5 name="clock" size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>OT Request</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -132,6 +137,12 @@ const styles = StyleSheet.create({
     height: width * 0.3,
     resizeMode: 'contain',
     marginBottom: 20,
+  },
+  profileButton: {
+    position: 'absolute',
+    top: 70,
+    right: 10,
+    padding: 10,
   },
   row: {
     flexDirection: 'row',
@@ -152,17 +163,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 5,
     textAlign: 'center',
-  },
-  logoutButton: {
-    marginTop: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    borderRadius: 50,
-    backgroundColor: '#2A2A2A',
-  },
-  logoutButtonText: {
-    color: 'white',
-    fontSize: 16,
   },
 });
 
