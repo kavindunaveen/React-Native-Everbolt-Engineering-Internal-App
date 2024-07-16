@@ -8,6 +8,7 @@ const Attendance = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 20}}>Select your Company:</Text>
       <TouchableOpacity style={styles.button1} onPress={() => handlePress('https://script.google.com/macros/s/AKfycby70b4ATK9pkoZ_GG2PVkBxkmxtoelWB5qXr16R1GWhzw9n-BSjS3jrwF3QoSbsu-Yv/exec')}>
         <Text style={styles.buttonText}>Everbolt Engineering</Text>
       </TouchableOpacity>
@@ -16,6 +17,9 @@ const Attendance = () => {
       </TouchableOpacity>
       <TouchableOpacity style={styles.button3} onPress={() => handlePress('https://script.google.com/macros/s/AKfycbxFYlTaWGHUWSaD-2RB22SXKEJqFbISLNu6L5VjYilqp2WlaoREcavLXYOZZRdZlHTf/exec')}>
         <Text style={styles.buttonText}>Everbolt Foods</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button4} onPress={() => handlePress('https://script.google.com/macros/s/AKfycbz__iDxsNvQ2Yo0481rCRzp6yyizw0KEfRegFVx9i53PbvjLdUrBQZoOvB7rNFrzRWN/exec')}>
+        <Text style={styles.buttonText}>CDI Electricals</Text>
       </TouchableOpacity>
     </View>
   );
@@ -47,6 +51,14 @@ const styles = StyleSheet.create({
   },
   button3: {
     backgroundColor: 'red',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+    width: '80%',
+    alignItems: 'center',
+  },
+  button4: {
+    backgroundColor: '#089fb1',
     padding: 15,
     borderRadius: 10,
     marginBottom: 20,

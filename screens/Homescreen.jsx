@@ -16,9 +16,6 @@ function HomeScreen() {
     Linking.openURL('https://outlook.office365.com/owa/calendar/MeetingRoom@everbolt.lk/bookings/');
   };
 
-  const openMarkVisitURL = () => {
-    Linking.openURL('https://script.google.com/macros/s/AKfycbybQPlGuIO13nISRQnTMmYtetFrAcEfHJ4TWkilVOuDxcqfbDREEJAp78GSHjxmNhHH/exec');
-  };
 
   const navigateToProfile = () => {
     navigation.navigate('ProfileScreen'); // Navigate to ProfileScreen
@@ -101,18 +98,19 @@ function HomeScreen() {
           <Text style={styles.buttonText}>Meeting Room</Text>
         </TouchableOpacity>
 
+
         <TouchableOpacity
           style={styles.button}
-          onPress={openMarkVisitURL}
+          onPress={() => navigateToScreen('MarkVisit')}
           onPressIn={animateButton}
         >
-          <FontAwesome5 name="marker" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Visit Mark</Text>
+          <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>Mark Visit</Text>
         </TouchableOpacity>
       </View>
-
+{/*
       <View style={styles.row}>
-      <TouchableOpacity
+       <TouchableOpacity
           style={styles.button}
           onPress={() => navigateToScreen('Leaveform')}
           onPressIn={animateButton}
@@ -121,6 +119,7 @@ function HomeScreen() {
           <Text style={styles.buttonText}>OT Request</Text>
         </TouchableOpacity>
       </View>
+      */}
     </View>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 
@@ -28,6 +28,7 @@ const Login = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Image source={require('../assets/logo.png')} style={styles.logo} />
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -65,7 +66,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: '#1A3819',
     alignItems: 'center',
+  },
+  logo: {
+    width: 170,
+    height: 50,
+    marginBottom: 70,
+    alignSelf: 'center',
   },
   input: {
     marginVertical: 10,
@@ -90,8 +98,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   signupText: {
-    color: '#0000ff',
+    color: '#fff',
     marginTop: 20,
+    textDecorationStyle: 'solid',
     textDecorationLine: 'underline',
   },
 });

@@ -16,7 +16,7 @@ const SignupScreen = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       console.log('User signed up:', userCredential.user.email);
-      alert('Sign Up successful! Check your email for verification.');
+      alert('Sign Up successful!');
 
       // Navigate to the homepage after successful sign-up
       navigation.navigate('Homescreen');
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+    backgroundColor: '#1A3819',
     alignItems: 'center',
   },
   logo: {
@@ -100,8 +101,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   switchText: {
-    color: '#0000ff',
+    color: '#fff',
     marginTop: 20,
+    textDecorationStyle: 'solid',
     textDecorationLine: 'underline',
   },
 });
