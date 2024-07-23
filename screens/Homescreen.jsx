@@ -21,6 +21,10 @@ function HomeScreen() {
     navigation.navigate('ProfileScreen'); // Navigate to ProfileScreen
   };
 
+  const navigateToNotificationScreen = () => {
+    navigation.navigate('NotificationScreen'); // Navigate to NotificationScreen
+  };
+
   const buttonScale = new Animated.Value(1);
 
   const animateButton = () => {
@@ -43,7 +47,11 @@ function HomeScreen() {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.profileButton} onPress={navigateToProfile}>
-        <FontAwesome5 name="user-circle" size={24} color="#FFFFFF" />
+        <FontAwesome5 name="user-circle" size={25} color="#FFFFFF" />
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.notificatoinButton} onPress={navigateToNotificationScreen}>
+        <FontAwesome5 name="bell" size={25} color="#FFFFFF" />
       </TouchableOpacity>
 
       <Image source={require('../assets/logo.png')} style={styles.logo} />
@@ -108,8 +116,8 @@ function HomeScreen() {
           <Text style={styles.buttonText}>Mark Visit</Text>
         </TouchableOpacity>
       </View>
-{/*
-      <View style={styles.row}>
+
+      {/*<View style={styles.row}>
        <TouchableOpacity
           style={styles.button}
           onPress={() => navigateToScreen('Leaveform')}
@@ -118,8 +126,8 @@ function HomeScreen() {
           <FontAwesome5 name="clock" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>OT Request</Text>
         </TouchableOpacity>
-      </View>
-      */}
+      </View>*/}
+      
     </View>
   );
 }
@@ -162,6 +170,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 5,
     textAlign: 'center',
+  },
+  notificatoinButton: {
+    position: 'absolute',
+    top: 70,
+    left: 10,
+    padding: 10,
   },
 });
 

@@ -1,0 +1,10 @@
+{
+  "projects": {
+    "default": "newever-81648",
+    "send notifications": "notification-38e2c",
+    "for noti": "newever-81648"
+  },
+  "targets": {},
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
+}

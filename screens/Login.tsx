@@ -1,14 +1,89 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Image, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 
+const validEmployeeIds = [
+  '1_prabath',
+  '1_nishantha',
+  '2_keshan',
+  '1_sammani',
+  '2_kithsiri',
+  '3_malsha',
+  '4_nilusha',
+  '3_sulochana',
+  '4_rajitha',
+  '10_shanaka',
+  '11_asangi',
+  '18_hashan',
+  '20_ramith',
+  '30_pavithra',
+  '49_sanduni',
+  '55_venusha',
+  '57_dilrukshi',
+  '60_roshan',
+  '64_pasindu',
+  '67_sasindu',
+  '72_keith',
+  '75_nawoda',
+  '76_sayuri',
+  '77_danushi',
+  '78_hansini',
+  '79_pradeesha',
+  '80_sandya',
+  '83_kalpa',
+  '84_pesala',
+  '86_nimesha',
+  '87_madhushi',
+  '88_sumith',
+  '89_udara',
+  '90_divyanjalee',
+  '93_widura',
+  '95_sandaru',
+  '96_manjula',
+  '97_madushani',
+  '307_chaminda',
+  '318_uditha',
+  '319_welikala',
+  '320_dilanga',
+  '321_tharindu',
+  '323_erandi',
+  '324_chamara',
+  '325_piyumal',
+  '326_aruna',
+  '329_chathurika',
+  '330_pasindu',
+  '331_renuka',
+  '513_yunal',
+  '1018_kusal'
+];
+
 const Login = ({ navigation }) => {
+  const [employee_id, setEmployee_id] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const validateEmployeeIdFormat = (id) => {
+    const regex = /^[0-9]+_[a-zA-Z]+$/;
+    return regex.test(id);
+  };
+
+  const validateEmployeeId = (id) => {
+    return validEmployeeIds.includes(id);
+  };
+
   const handleLogin = async () => {
+    if (!validateEmployeeIdFormat(employee_id)) {
+      Alert.alert('Invalid Employee ID', 'Employee ID must be in the format: employeeid_firstname');
+      return;
+    }
+
+    if (!validateEmployeeId(employee_id)) {
+      Alert.alert('Invalid Employee ID', 'Employee ID is not recognized.');
+      return;
+    }
+
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
@@ -27,36 +102,49 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={require('../assets/logo.png')} style={styles.logo} />
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        autoCapitalize="none"
-        secureTextEntry={true}
-        value={password}
-        onChangeText={setPassword}
-      />
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : (
-        <View>
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleSignup}>
-            <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : null}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
+    >
+      <ScrollView contentContainerStyle={styles.container}>
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
+        <TextInput
+          style={styles.input}
+          placeholder="Employee ID"
+          autoCapitalize="none"
+          value={employee_id}
+          onChangeText={setEmployee_id}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          autoCapitalize="none"
+          secureTextEntry={true}
+          value={password}
+          onChangeText={setPassword}
+        />
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <View>
+            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleSignup}>
+              <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
