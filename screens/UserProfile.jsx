@@ -3,6 +3,9 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { signOut } from 'firebase/auth'; // Import the signOut method
 
 const UserProfile = ({ userEmail }) => {
+
+  unregisterIndieDevice('NOAVabBmdhUKHBVII4rotEpMLpv1', 22555, 'NDU2cMCcGz7KxxDdDGEG4R');
+
   const handleLogout = async () => {
     try {
       await signOut(FIREBASE_AUTH); // Call the signOut method

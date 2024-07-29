@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Image, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import React, { useState, useRef } from 'react';
+import {
+  View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator,
+  Image, Alert, KeyboardAvoidingView, ScrollView, Platform, Modal,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
+import * as ImagePicker from 'expo-image-picker';
+import ReactNativeModal from 'react-native-modal';
 
 const validEmployeeIds = [
   '1_prabath',
@@ -39,6 +44,7 @@ const validEmployeeIds = [
   '88_sumith',
   '89_udara',
   '90_divyanjalee',
+  '91_chaminda',
   '93_widura',
   '95_sandaru',
   '96_manjula',
@@ -56,7 +62,10 @@ const validEmployeeIds = [
   '330_pasindu',
   '331_renuka',
   '513_yunal',
-  '1018_kusal'
+  '1018_kusal',
+  '4_nilusha',
+  '3_malsha',
+  '1_kavindu'
 ];
 
 const SignupScreen = () => {
@@ -64,6 +73,8 @@ const SignupScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [avatarPressDisabled, setAvatarPressDisabled] = useState(false);
   const navigation = useNavigation();
   const auth = FIREBASE_AUTH;
 
@@ -103,6 +114,33 @@ const SignupScreen = () => {
     }
   };
 
+  const handleAvatarPress = () => {
+    if (avatarPressDisabled) return;
+
+    console.log('Avatar pressed!');
+    setAvatarPressDisabled(true);
+    setIsModalVisible(true);
+
+    setTimeout(() => {
+      setAvatarPressDisabled(false);
+    }, 1000); // Disable for 1 second to debounce
+  };
+
+  const pickImageFromGallery = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      console.log(result.uri);
+      // Here you can handle the selected image URI
+    }
+    setIsModalVisible(false);
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -110,7 +148,9 @@ const SignupScreen = () => {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : -300}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Image source={require('../assets/logo.png')} style={styles.logo} />
+        <TouchableOpacity onPress={handleAvatarPress}>
+          <Image source={require('../assets/logo.png')} style={styles.logo} />
+        </TouchableOpacity>
         <TextInput
           style={styles.input}
           placeholder="Employee ID"
@@ -143,6 +183,19 @@ const SignupScreen = () => {
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
           <Text style={styles.switchText}>Already have an account? Log In</Text>
         </TouchableOpacity>
+        <ReactNativeModal
+          isVisible={isModalVisible}
+          animationIn="slideInUp"
+          animationOut="slideOutDown"
+          onBackdropPress={() => setIsModalVisible(false)}
+          style={styles.modalContainer}
+        >
+          <View style={styles.modalContent}>
+            <TouchableOpacity onPress={pickImageFromGallery}>
+              <Text style={styles.modalOption}>Choose Photo from Gallery</Text>
+            </TouchableOpacity>
+          </View>
+        </ReactNativeModal>
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -193,5 +246,19 @@ const styles = StyleSheet.create({
     marginTop: 20,
     textDecorationStyle: 'solid',
     textDecorationLine: 'underline',
+  },
+  modalContainer: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalOption: {
+    fontSize: 18,
+    marginVertical: 10,
   },
 });

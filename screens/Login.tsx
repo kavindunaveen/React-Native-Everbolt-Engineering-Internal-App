@@ -2,67 +2,26 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Image, Alert, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
+import { useNavigation } from '@react-navigation/native';
+import { registerIndieID, unregisterIndieDevice } from 'native-notify';
+import axios from 'axios';
 
 const validEmployeeIds = [
-  '1_prabath',
-  '1_nishantha',
-  '2_keshan',
-  '1_sammani',
-  '2_kithsiri',
-  '3_malsha',
-  '4_nilusha',
-  '3_sulochana',
-  '4_rajitha',
-  '10_shanaka',
-  '11_asangi',
-  '18_hashan',
-  '20_ramith',
-  '30_pavithra',
-  '49_sanduni',
-  '55_venusha',
-  '57_dilrukshi',
-  '60_roshan',
-  '64_pasindu',
-  '67_sasindu',
-  '72_keith',
-  '75_nawoda',
-  '76_sayuri',
-  '77_danushi',
-  '78_hansini',
-  '79_pradeesha',
-  '80_sandya',
-  '83_kalpa',
-  '84_pesala',
-  '86_nimesha',
-  '87_madhushi',
-  '88_sumith',
-  '89_udara',
-  '90_divyanjalee',
-  '93_widura',
-  '95_sandaru',
-  '96_manjula',
-  '97_madushani',
-  '307_chaminda',
-  '318_uditha',
-  '319_welikala',
-  '320_dilanga',
-  '321_tharindu',
-  '323_erandi',
-  '324_chamara',
-  '325_piyumal',
-  '326_aruna',
-  '329_chathurika',
-  '330_pasindu',
-  '331_renuka',
-  '513_yunal',
-  '1018_kusal'
+  '1_prabath', '1_nishantha', '2_keshan', '1_sammani', '2_kithsiri', '3_malsha', '4_nilusha', '3_sulochana', '4_rajitha', 
+  '10_shanaka', '11_asangi', '18_hashan', '20_ramith', '30_pavithra', '49_sanduni', '55_venusha', '57_dilrukshi', 
+  '60_roshan', '64_pasindu', '67_sasindu', '72_keith', '75_nawoda', '76_sayuri', '77_danushi', '78_hansini', '79_pradeesha', 
+  '80_sandya', '83_kalpa', '84_pesala', '86_nimesha', '87_madhushi', '88_sumith', '89_udara', '90_divyanjalee', '93_widura', 
+  '95_sandaru', '96_manjula', '97_madushani', '307_chaminda', '318_uditha', '319_welikala', '320_dilanga', '321_tharindu', 
+  '323_erandi', '324_chamara', '325_piyumal', '326_aruna', '329_chathurika', '330_pasindu', '331_renuka', '513_yunal', 
+  '1018_kusal','4_nilusha','3_malsha','1_kavindu'
 ];
 
-const Login = ({ navigation }) => {
+const LoginScreen = () => {
   const [employee_id, setEmployee_id] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigation = useNavigation();
 
   const validateEmployeeIdFormat = (id) => {
     const regex = /^[0-9]+_[a-zA-Z]+$/;
@@ -87,7 +46,13 @@ const Login = ({ navigation }) => {
     setLoading(true);
     try {
       const userCredential = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
-      console.log('User signed in:', userCredential.user.email);
+      console.log('User logged in:', userCredential.user.email);
+      alert('Login successful!');
+
+      // Register device for push notifications
+      registerIndieID('NOAVabBmdhUKHBVII4rotEpMLpv1', 22555, 'NDU2cMCcGz7KxxDdDGEG4R');
+
+      // Navigate to the homepage after successful login
       navigation.navigate('Homescreen');
     } catch (error) {
       console.error('Error logging in:', error.message);
@@ -95,10 +60,6 @@ const Login = ({ navigation }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSignup = () => {
-    navigation.navigate('Signup'); // Navigate to the SignupScreen
   };
 
   return (
@@ -132,23 +93,21 @@ const Login = ({ navigation }) => {
           onChangeText={setPassword}
         />
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
         ) : (
-          <View>
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-              <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleSignup}>
-              <Text style={styles.signupText}>Don't have an account? Sign Up</Text>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Log In</Text>
+          </TouchableOpacity>
         )}
+        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+          <Text style={styles.switchText}>Don't have an account? Click here to Register</Text>
+        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-export default Login;
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -185,7 +144,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  signupText: {
+  loadingIndicator: {
+    marginTop: 20,
+  },
+  switchText: {
     color: '#fff',
     marginTop: 20,
     textDecorationStyle: 'solid',

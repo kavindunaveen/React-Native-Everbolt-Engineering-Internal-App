@@ -3,43 +3,49 @@ import { StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator } fr
 import { useNavigation } from '@react-navigation/native';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialIcons } from '@expo/vector-icons'; // Import icons
+import * as ImagePicker from 'expo-image-picker'; // Import Expo Image Picker
 
 const ProfileScreen = () => {
-  const navigation = useNavigation();
   const [user, setUser] = useState(null);
+  const [employeeId, setEmployeeId] = useState('');
   const [loading, setLoading] = useState(true);
+  const [avatarUri, setAvatarUri] = useState(null); // State for avatar image URI
+  const navigation = useNavigation();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (firebaseUser) => {
-      if (firebaseUser) {
-        // Check if the user signed in with Google
-        if (firebaseUser.providerData && firebaseUser.providerData[0].providerId === 'google.com') {
-          // Fetch additional profile information from Google
-          const googleProfile = firebaseUser.providerData[0];
-
-          setUser({
-            displayName: googleProfile.displayName,
-            email: googleProfile.email,
-            photoURL: googleProfile.photoURL,
-            uid: firebaseUser.uid,
-          });
-        } else {
-          // For other authentication methods, use basic user info
+    const fetchUserData = async () => {
+      const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (firebaseUser) => {
+        if (firebaseUser) {
           setUser({
             displayName: firebaseUser.displayName,
             email: firebaseUser.email,
             photoURL: firebaseUser.photoURL,
             uid: firebaseUser.uid,
           });
-        }
-      } else {
-        navigation.navigate('Login');
-      }
-      setLoading(false);
-    });
 
-    return () => unsubscribe();
-  }, []);
+          // Retrieve employee ID and avatar URI from AsyncStorage
+          const storedEmployeeId = await AsyncStorage.getItem('employee_id');
+          if (storedEmployeeId) {
+            setEmployeeId(storedEmployeeId);
+          }
+
+          const storedAvatarUri = await AsyncStorage.getItem('avatar_uri');
+          if (storedAvatarUri) {
+            setAvatarUri(storedAvatarUri);
+          }
+        } else {
+          navigation.navigate('Login');
+        }
+        setLoading(false);
+      });
+
+      return () => unsubscribe();
+    };
+
+    fetchUserData();
+  }, [navigation]);
 
   const handleLogout = async () => {
     try {
@@ -47,6 +53,27 @@ const ProfileScreen = () => {
       navigation.navigate('Login');
     } catch (error) {
       console.error('Error logging out:', error);
+    }
+  };
+
+  const handleAvatarPress = async () => {
+    // Request permission to access media library
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    // Show options for picking an image from gallery
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      setAvatarUri(uri);
+      await AsyncStorage.setItem('avatar_uri', uri); // Store the picked image URI
     }
   };
 
@@ -58,19 +85,39 @@ const ProfileScreen = () => {
     );
   }
 
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        <Text>No user found</Text>
+      </View>
+    );
+  }
+
+  // Verify employee_id is defined and is a string
+  const isEmployeeIdString = typeof employeeId === 'string';
+  const [userId, username] = isEmployeeIdString ? employeeId.split('_') : ['Unknown', 'Unknown'];
+
   return (
     <View style={styles.container}>
+      <Text style={styles.frontText}>User Profile</Text>
       <View style={styles.profileContainer}>
-        {user && user.photoURL ? (
-          <Image source={{ uri: user.photoURL }} style={styles.avatar} />
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-            <Text style={styles.avatarText}>{user ? (user.displayName ? user.displayName.charAt(0).toUpperCase() : '?') : '?'}</Text>
-          </View>
-        )}
-        <Text style={styles.username}>{user ? (user.displayName || 'User') : 'User'}</Text>
-        <Text style={styles.email}>{user ? user.email : ''}</Text>
-        <Text style={styles.userId}>User ID: {user ? user.uid : ''}</Text>
+        <View style={styles.avatarContainer}>
+          <TouchableOpacity onPress={handleAvatarPress}>
+            {avatarUri || user.photoURL ? (
+              <Image source={{ uri: avatarUri || user.photoURL }} style={styles.avatar} />
+            ) : (
+              <View style={styles.avatarPlaceholder}>
+                <Text style={styles.avatarText}>{user.displayName ? user.displayName.charAt(0).toUpperCase() : '?'}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+        <View style={styles.infoContainer}>
+          <Text style={styles.username}>Employee ID: {employeeId.charAt(0).toUpperCase() + employeeId.slice(1)}</Text>
+          <Text style={styles.email}>Email: {user.email}</Text>
+          <Text style={styles.codeContent}>User ID: {user.uid}</Text>
+          <Text style={styles.username}>Everbolt Engineering (Pvt) Ltd</Text>
+        </View>
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -80,59 +127,81 @@ const ProfileScreen = () => {
   );
 };
 
-export default ProfileScreen;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#E5E5E5',
+    padding: 20,
+    justifyContent: 'space-between', // Ensure space is evenly distributed
+  },
+  frontText: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 20, // Adjusted margin to bring text down
   },
   profileContainer: {
-    alignItems: 'center',
-    marginBottom: 40,
+    alignItems: 'center', // Center profile container
+    marginBottom: 20, // Adjusted margin for spacing
+  },
+  avatarContainer: {
+    alignItems: 'center', // Center avatar
+    marginBottom: 55, // Increased spacing between avatar and profile text
+    marginLeft: 10,
   },
   avatar: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 20,
+    width: 180, // Increased size of avatar
+    height: 180,
+    borderRadius: 90, // Adjusted border radius to match increased size
+    borderWidth: 3, // Thickness of the border
+    borderColor: '#FF6347', // Border color
   },
   avatarPlaceholder: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 180, // Increased size of avatar placeholder
+    height: 180,
+    borderRadius: 90, // Adjusted border radius to match increased size
     backgroundColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
   },
   avatarText: {
-    fontSize: 72,
+    fontSize: 90, // Increased font size for placeholder text
     color: '#fff',
   },
+  infoContainer: {
+    alignSelf: 'flex-start', // Align text to the left
+    marginTop: 20, // Move user details up
+    marginLeft: 20, // Bring details slightly to the right
+  },
   username: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: '#006400',
+    marginBottom: 25, // Spacing between text lines
   },
   email: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 10,
+    fontSize: 18,
+    color: '#000',
+    marginBottom: 25, // Spacing between text lines
   },
   userId: {
-    fontSize: 14,
-    color: '#aaa',
-    marginBottom: 20,
+    fontSize: 20,
+    color: '#006400',
+    marginBottom: 25, // Spacing between text lines
+    fontWeight: 'bold',
+  },
+  codeContent: {
+    fontSize: 17,
+    marginBottom: 25, // Spacing between text lines
   },
   logoutButton: {
     backgroundColor: '#FF6347',
-    paddingVertical: 12,
-    paddingHorizontal: 50,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
     borderRadius: 25,
     elevation: 3,
+    alignSelf: 'center', // Center logout button
+    marginBottom: 100, // Adjusted margin to bring button closer to profile container
   },
   logoutButtonText: {
     color: '#fff',
@@ -140,3 +209,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+
+export default ProfileScreen;
