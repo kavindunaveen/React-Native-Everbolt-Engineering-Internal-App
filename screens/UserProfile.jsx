@@ -13,7 +13,7 @@ const UserProfile = ({ userEmail }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container}>   
       <Text style={styles.email}>Logged in as: {userEmail}</Text>
       <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
         <Text style={styles.logoutText}>Logout</Text>

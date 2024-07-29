@@ -2,11 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Image, Linking, Animated, Easing, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
 function HomeScreen() {
+  const [avatarUri, setAvatarUri] = useState(null);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchAvatarUri = async () => {
+      const storedAvatarUri = await AsyncStorage.getItem('avatar_uri');
+      if (storedAvatarUri) {
+        setAvatarUri(storedAvatarUri);
+      }
+    };
+    fetchAvatarUri();
+  }, []);
 
   const navigateToScreen = (screenName) => {
     navigation.navigate(screenName);
@@ -15,7 +27,6 @@ function HomeScreen() {
   const openMeetingRoom = () => {
     Linking.openURL('https://outlook.office365.com/owa/calendar/MeetingRoom@everbolt.lk/bookings/');
   };
-
 
   const navigateToProfile = () => {
     navigation.navigate('ProfileScreen'); // Navigate to ProfileScreen
@@ -43,7 +54,11 @@ function HomeScreen() {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.profileButton} onPress={navigateToProfile}>
-        <FontAwesome5 name="user-circle" size={24} color="#FFFFFF" />
+        {avatarUri ? (
+          <Image source={{ uri: avatarUri }} style={styles.profileImage} />
+        ) : (
+          <FontAwesome5 name="user-circle" size={24} color="#FFFFFF" />
+        )}
       </TouchableOpacity>
 
       <Image source={require('../assets/logo.png')} style={styles.logo} />
@@ -98,7 +113,6 @@ function HomeScreen() {
           <Text style={styles.buttonText}>Meeting Room</Text>
         </TouchableOpacity>
 
-
         <TouchableOpacity
           style={styles.button}
           onPress={() => navigateToScreen('MarkVisit')}
@@ -108,18 +122,6 @@ function HomeScreen() {
           <Text style={styles.buttonText}>Mark Visit</Text>
         </TouchableOpacity>
       </View>
-{/*
-      <View style={styles.row}>
-       <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigateToScreen('Leaveform')}
-          onPressIn={animateButton}
-        >
-          <FontAwesome5 name="clock" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>OT Request</Text>
-        </TouchableOpacity>
-      </View>
-      */}
     </View>
   );
 }
@@ -142,6 +144,13 @@ const styles = StyleSheet.create({
     top: 70,
     right: 10,
     padding: 10,
+  },
+  profileImage: {
+    width: 40, // Reduced size
+    height: 40, // Reduced size
+    borderRadius: 20, // Adjusted for the reduced size
+    borderWidth: 0, // Border width
+    borderColor: '#000000', // Black border
   },
   row: {
     flexDirection: 'row',

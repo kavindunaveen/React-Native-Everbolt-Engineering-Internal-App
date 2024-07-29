@@ -23,6 +23,17 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const requestUserPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    
+    if (enabled) {
+      console.log('Authorization status:', authStatus);
+    }
+  }
+
   useEffect(() => {
     const checkUserAuth = async () => {
       const storedUser = await AsyncStorage.getItem('user');
@@ -64,7 +75,7 @@ function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={user ? 'Homescreen' : 'Login'}>
+      <Stack.Navigator initialRouteName= {user ? 'HomeScreen' : 'Signup'}>
         <Stack.Screen 
           name="Homescreen" 
           component={Homescreen} 
@@ -134,5 +145,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-});
+  },
+})
