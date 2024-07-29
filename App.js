@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ActivityIndicator, Alert } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
 
 import Homescreen from './screens/Homescreen';
@@ -16,6 +16,7 @@ import MarkVisit from './screens/MarkVisit';
 import SignupScreen from './screens/SignupScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import OTform from './screens/OTform';
+import NotificationScreen from './screens/NotificationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -132,6 +133,11 @@ function App() {
           name="Leaveform" 
           component={OTform} 
           options={{ title: 'OT Request' }} 
+        />
+        <Stack.Screen 
+          name="NotificationScreen" 
+          component={NotificationScreen} 
+          options={{ title: 'Notifications' }} 
         />
       </Stack.Navigator>
     </NavigationContainer>

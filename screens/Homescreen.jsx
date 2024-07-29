@@ -23,13 +23,16 @@ function HomeScreen() {
   const navigateToScreen = (screenName) => {
     navigation.navigate(screenName);
   };
-
+ 
   const openMeetingRoom = () => {
     Linking.openURL('https://outlook.office365.com/owa/calendar/MeetingRoom@everbolt.lk/bookings/');
   };
 
   const navigateToProfile = () => {
     navigation.navigate('ProfileScreen'); // Navigate to ProfileScreen
+  };
+  const navigateToNotificationScreen = () => {
+    navigation.navigate('NotificationScreen'); // Navigate to NotificationScreen
   };
 
   const buttonScale = new Animated.Value(1);
@@ -59,6 +62,13 @@ function HomeScreen() {
         ) : (
           <FontAwesome5 name="user-circle" size={24} color="#FFFFFF" />
         )}
+<<<<<<< HEAD
+=======
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.notificatoinButton} onPress={navigateToNotificationScreen}>
+        <FontAwesome5 name="bell" size={24} color="#FFFFFF" />
+>>>>>>> b9d02a4091a30ff17ca27af0878f91a2dc97d5cb
       </TouchableOpacity>
 
       <Image source={require('../assets/logo.png')} style={styles.logo} />
@@ -122,6 +132,19 @@ function HomeScreen() {
           <Text style={styles.buttonText}>Mark Visit</Text>
         </TouchableOpacity>
       </View>
+<<<<<<< HEAD
+=======
+            <View style={styles.row}>
+       <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigateToScreen('Leaveform')}
+          onPressIn={animateButton}
+        >
+          <FontAwesome5 name="clock" size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>OT Request</Text>
+        </TouchableOpacity>
+      </View>
+>>>>>>> b9d02a4091a30ff17ca27af0878f91a2dc97d5cb
     </View>
   );
 }
@@ -171,6 +194,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 5,
     textAlign: 'center',
+  },
+  notificatoinButton: {
+    position: 'absolute',
+    top: 70,
+    left: 10,
+    padding: 10,
   },
 });
 

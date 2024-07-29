@@ -62,7 +62,14 @@ const validEmployeeIds = [
   '330_pasindu',
   '331_renuka',
   '513_yunal',
+<<<<<<< HEAD
   '1018_kusal'
+=======
+  '1018_kusal',
+  '4_nilusha',
+  '3_malsha',
+  '1_kavindu'
+>>>>>>> b9d02a4091a30ff17ca27af0878f91a2dc97d5cb
 ];
 
 const SignupScreen = () => {
