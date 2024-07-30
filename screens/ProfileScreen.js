@@ -4,14 +4,14 @@ import { useNavigation } from '@react-navigation/native';
 import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MaterialIcons } from '@expo/vector-icons'; // Import icons
-import * as ImagePicker from 'expo-image-picker'; // Import Expo Image Picker
+import { MaterialIcons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 
 const ProfileScreen = () => {
   const [user, setUser] = useState(null);
   const [employeeId, setEmployeeId] = useState('');
   const [loading, setLoading] = useState(true);
-  const [avatarUri, setAvatarUri] = useState(null); // State for avatar image URI
+  const [avatarUri, setAvatarUri] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -25,7 +25,6 @@ const ProfileScreen = () => {
             uid: firebaseUser.uid,
           });
 
-          // Retrieve employee ID and avatar URI from AsyncStorage
           const storedEmployeeId = await AsyncStorage.getItem('employee_id');
           if (storedEmployeeId) {
             setEmployeeId(storedEmployeeId);
@@ -57,14 +56,12 @@ const ProfileScreen = () => {
   };
 
   const handleAvatarPress = async () => {
-    // Request permission to access media library
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       alert('Sorry, we need camera roll permissions to make this work!');
       return;
     }
 
-    // Show options for picking an image from gallery
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
@@ -73,8 +70,13 @@ const ProfileScreen = () => {
     if (!result.canceled) {
       const uri = result.assets[0].uri;
       setAvatarUri(uri);
-      await AsyncStorage.setItem('avatar_uri', uri); // Store the picked image URI
+      await AsyncStorage.setItem('avatar_uri', uri);
     }
+  };
+
+  const handleRemoveAvatar = async () => {
+    setAvatarUri(null);
+    await AsyncStorage.removeItem('avatar_uri');
   };
 
   if (loading) {
@@ -93,7 +95,6 @@ const ProfileScreen = () => {
     );
   }
 
-  // Verify employee_id is defined and is a string
   const isEmployeeIdString = typeof employeeId === 'string';
   const [userId, username] = isEmployeeIdString ? employeeId.split('_') : ['Unknown', 'Unknown'];
 
@@ -107,10 +108,15 @@ const ProfileScreen = () => {
               <Image source={{ uri: avatarUri || user.photoURL }} style={styles.avatar} />
             ) : (
               <View style={styles.avatarPlaceholder}>
-                <Text style={styles.avatarText}>{user.displayName ? user.displayName.charAt(0).toUpperCase() : '?'}</Text>
+                <Text style={styles.avatarPlaceholderText}>Add your profile photo</Text>
               </View>
             )}
           </TouchableOpacity>
+          {avatarUri && (
+            <TouchableOpacity style={styles.removeButton} onPress={handleRemoveAvatar}>
+              <Text style={styles.removeButtonText}>Remove</Text>
+            </TouchableOpacity>
+          )}
         </View>
         <View style={styles.infoContainer}>
           <Text style={styles.username}>Employee ID: {employeeId.charAt(0).toUpperCase() + employeeId.slice(1)}</Text>
@@ -132,67 +138,80 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E5E5E5',
     padding: 20,
-    justifyContent: 'space-between', // Ensure space is evenly distributed
+    justifyContent: 'space-between',
   },
   frontText: {
     fontSize: 25,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginVertical: 20, // Adjusted margin to bring text down
+    marginVertical: 20,
   },
   profileContainer: {
-    alignItems: 'center', // Center profile container
-    marginBottom: 20, // Adjusted margin for spacing
+    alignItems: 'center',
+    marginBottom: 20,
   },
   avatarContainer: {
-    alignItems: 'center', // Center avatar
-    marginBottom: 55, // Increased spacing between avatar and profile text
+    alignItems: 'center',
+    marginBottom: 55,
     marginLeft: 10,
   },
   avatar: {
-    width: 180, // Increased size of avatar
+    width: 180,
     height: 180,
-    borderRadius: 90, // Adjusted border radius to match increased size
-    borderWidth: 3, // Thickness of the border
-    borderColor: '#FF6347', // Border color
+    borderRadius: 90,
+    borderWidth: 3,
+    borderColor: 'green',
   },
   avatarPlaceholder: {
-    width: 180, // Increased size of avatar placeholder
+    width: 180,
     height: 180,
-    borderRadius: 90, // Adjusted border radius to match increased size
+    borderRadius: 90,
     backgroundColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  avatarText: {
-    fontSize: 90, // Increased font size for placeholder text
+  avatarPlaceholderText: {
+    fontSize: 20,
     color: '#fff',
+    textAlign: 'center',
+  },
+  removeButton: {
+    marginTop: 10,
+    backgroundColor: '#FF6347',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  removeButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   infoContainer: {
-    alignSelf: 'flex-start', // Align text to the left
-    marginTop: 20, // Move user details up
-    marginLeft: 20, // Bring details slightly to the right
+    alignSelf: 'flex-start',
+    marginTop: 20,
+    marginLeft: 20,
   },
   username: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#006400',
-    marginBottom: 25, // Spacing between text lines
+    marginBottom: 25,
   },
   email: {
     fontSize: 18,
     color: '#000',
-    marginBottom: 25, // Spacing between text lines
+    marginBottom: 25,
   },
   userId: {
     fontSize: 20,
     color: '#006400',
-    marginBottom: 25, // Spacing between text lines
+    marginBottom: 25,
     fontWeight: 'bold',
   },
   codeContent: {
     fontSize: 17,
-    marginBottom: 25, // Spacing between text lines
+    marginBottom: 25,
   },
   logoutButton: {
     backgroundColor: '#FF6347',
@@ -200,8 +219,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 25,
     elevation: 3,
-    alignSelf: 'center', // Center logout button
-    marginBottom: 100, // Adjusted margin to bring button closer to profile container
+    alignSelf: 'center',
+    marginBottom: 100,
   },
   logoutButtonText: {
     color: '#fff',
@@ -209,6 +228,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
 
 export default ProfileScreen;
