@@ -64,6 +64,7 @@ const validEmployeeIds = [
   '513_yunal',
   '1018_kusal',
   '4_nilusha',
+  '501_nishara',
   '3_malsha',
   '1_kavindu'
 ];

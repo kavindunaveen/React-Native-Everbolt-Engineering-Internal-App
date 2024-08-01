@@ -13,7 +13,7 @@ const validEmployeeIds = [
   '80_sandya', '83_kalpa', '84_pesala', '86_nimesha', '87_madhushi', '88_sumith', '89_udara', '90_divyanjalee', '93_widura', 
   '95_sandaru', '96_manjula', '97_madushani', '307_chaminda', '318_uditha', '319_welikala', '320_dilanga', '321_tharindu', 
   '323_erandi', '324_chamara', '325_piyumal', '326_aruna', '329_chathurika', '330_pasindu', '331_renuka', '513_yunal', 
-  '1018_kusal','4_nilusha','3_malsha','1_kavindu'
+  '1018_kusal','4_nilusha','3_malsha','1_kavindu','501_nishara',
 ];
 
 const LoginScreen = () => {
