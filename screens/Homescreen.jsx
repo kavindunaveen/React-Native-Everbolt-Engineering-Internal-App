@@ -128,17 +128,17 @@ function HomeScreen() {
           <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Mark Visit</Text>
         </TouchableOpacity>
-      </View>
+     </View>
             <View style={styles.row}>
-       <TouchableOpacity
+       {/* <TouchableOpacity
           style={styles.button}
           onPress={() => navigateToScreen('Leaveform')}
           onPressIn={animateButton}
         >
           <FontAwesome5 name="clock" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>OT Request</Text>
-        </TouchableOpacity>
-      </View>
+        </TouchableOpacity>*/}
+      </View> 
     </View>
   );
 }
