@@ -20,7 +20,7 @@
       "bundleIdentifier": "com.everboltit.everboltapp"
     },
     "android": {
-      "versionCode": 8, 
+      "versionCode": 9, 
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
