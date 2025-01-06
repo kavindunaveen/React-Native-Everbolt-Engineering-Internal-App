@@ -69,7 +69,12 @@ const validEmployeeIds = [
   '1_kavindu',
   '4_maneesha',
   '3_sandani',
-  '02_viraj'
+  '706_viraj',
+  '108_shanka',
+  '514_dewnaka',
+  '705_shalini',
+  '333_kusal',
+
 ];
 
 const SignupScreen = () => {
