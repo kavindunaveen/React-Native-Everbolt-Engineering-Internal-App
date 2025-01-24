@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 
 export default function Complain() {
     const [customerName, setCustomerName] = useState('');
     const [partNo, setPartNo] = useState('');
     const [complaint, setComplaint] = useState('');
+    const [isLoading, setIsLoading] = useState(false); // State to track loading
 
     const sendComplaint = async () => {
         if (!customerName || !complaint) {
@@ -12,8 +13,9 @@ export default function Complain() {
             return;
         }
 
+        setIsLoading(true); // Start loading
         try {
-            const response = await fetch('https://script.google.com/macros/s/AKfycbyZO6rTWr5fTy_HUTKfJ__XxldR1AlYDj3myYC-AgtwFdgocyqbnya8eanSFTO5Yd1Kwg/exec', {
+            const response = await fetch('https://script.google.com/macros/s/AKfycbxzJfcVlaaJVWWAJU-706aCFzRA6LNT8pOeYcqDweB3ByuQbOtNopXqrmoGkzvhra9aMw/exec', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -33,6 +35,8 @@ export default function Complain() {
         } catch (error) {
             console.error('Error sending email:', error);
             Alert.alert('Error', `An error occurred: ${error.toString()}`);
+        } finally {
+            setIsLoading(false); // Stop loading regardless of the outcome
         }
     };
 
@@ -58,9 +62,13 @@ export default function Complain() {
                 onChangeText={setComplaint}
                 multiline
             />
-            <TouchableOpacity style={styles.button} onPress={sendComplaint}>
-                <Text style={styles.buttonText}>Submit Complaint</Text>
-            </TouchableOpacity>
+            {isLoading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+                <TouchableOpacity style={styles.button} onPress={sendComplaint}>
+                    <Text style={styles.buttonText}>Submit Complaint</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 }
