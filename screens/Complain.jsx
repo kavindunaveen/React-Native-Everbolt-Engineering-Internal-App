@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView
+} from 'react-native';
 
 export default function Complain() {
     const [customerName, setCustomerName] = useState('');
@@ -41,7 +52,11 @@ export default function Complain() {
     };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.title}>File a Complaint</Text>
             <TextInput
                 style={styles.input}
@@ -69,36 +84,45 @@ export default function Complain() {
                     <Text style={styles.buttonText}>Submit Complaint</Text>
                 </TouchableOpacity>
             )}
-        </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         padding: 20,
         justifyContent: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: '#E5E5E5',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
+        color: '#333',
     },
     input: {
         borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        marginBottom: 20,
-        padding: 10,
+        borderColor: 'white',
+        borderRadius: 8,
+        marginBottom: 15,
+        paddingHorizontal: 10,
         height: 50,
+        fontSize: 16,
+        backgroundColor: 'white',
+        color: 'black',
     },
     button: {
-        backgroundColor: '#007bff',
-        padding: 15,
-        borderRadius: 5,
+        backgroundColor: 'green',
+        paddingVertical: 12,
+        borderRadius: 8,
         alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
     },
     buttonText: {
         color: '#fff',
