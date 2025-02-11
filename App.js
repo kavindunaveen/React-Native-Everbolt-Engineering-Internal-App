@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { FIREBASE_AUTH } from './FirebaseConfig';
+import EverboltEngineering from './screens/visit_screens/EverboltEngineering'; 
 
 import Homescreen from './screens/Homescreen';
 import Attendance from './screens/Attendance';
@@ -117,6 +118,11 @@ function App() {
           name="Signup" 
           component={SignupScreen} 
           options={{ title: 'Create Account' }} 
+        />
+        <Stack.Screen
+        name = "EverboltEngineering"
+        component={EverboltEngineering}
+        options={{ title: '' }} 
         />
         <Stack.Screen 
           name="Leaveform" 

@@ -1,77 +1,53 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const MarkVisit = () => {
-  const handlePress = (url) => {
-    Linking.openURL(url);
-  };
+    const navigation = useNavigation();
 
-  return (
-    <View style={styles.container}>
+    const handlePress = () => {
+        navigation.navigate('EverboltEngineering'); // Ensure this matches the screen name in the navigator
+    };
 
-    <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 20}}>Select your Company:</Text>
-      <TouchableOpacity style={styles.button1} onPress={() => handlePress('https://script.google.com/macros/s/AKfycbyx1k0hfihZhN1ev7ajYs3mVbuwQ1DJCMiBMOV_ClXbFowe2XkmNim5-fgzQwl3U8OM/exec')}>
-        <Text style={styles.buttonText}>Everbolt Engineering Visit</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button2} onPress={() => handlePress('https://script.google.com/macros/s/AKfycbyoQpNNIvrut13r7INrQXuIi6V8rmbrjEhPRgDUCIxzCTJHMTqKT9nCg4o8nLkCcaKX/exec')}>
-        <Text style={styles.buttonText}>Everbolt Services Visit</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button3} onPress={() => handlePress('https://script.google.com/macros/s/AKfycbwa9nAK6F7HD_cFRJwsOksDUMJ3NiBkqFp1GSktK8Tg_yccMmSL4AftDwYl5E6WP18fgw/exec')}>
-        <Text style={styles.buttonText}>Everbolt Foods Visit</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button4} onPress={() => handlePress('https://script.google.com/macros/s/AKfycby3LWAwGfu8HLNLGZTaNoifNKNJ15ZahOwXhWZwvIFpxJ9GZ7zDCZXz-SCUgQjZMUf3/exec')}>
-        <Text style={styles.buttonText}>CDI Electricals Visit</Text>
-      </TouchableOpacity>
-    </View>
-  );
+    return (
+        <View style={styles.container}>
+            <Text style={styles.title}>Mark Your Visit:</Text>
+
+            {/* Button with Logo on the Left */}
+            <TouchableOpacity style={styles.button1} onPress={handlePress}>
+                <Text style={styles.buttonText}>Everbolt Engineering</Text>
+            </TouchableOpacity>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-  },
-  button1: {
-    backgroundColor: 'darkgreen',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    width: '80%',
-    alignItems: 'center',
-  },
-
-  button2: {
-    backgroundColor: 'green',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    width: '80%',
-    alignItems: 'center',
-  },
-  button3: {
-    backgroundColor: 'red',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    width: '80%',
-    alignItems: 'center',
-  },
-  button4: {
-    backgroundColor: '#089fb1',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-    width: '80%',
-    alignItems: 'center',
-  },
-
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',
+    },
+    title: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 30, // Increased margin for better spacing
+        textAlign: 'center',
+        color: 'black'
+    },
+    button1: {
+        backgroundColor: 'darkgreen',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 20,
+        width: '80%',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
 });
 
 export default MarkVisit;
