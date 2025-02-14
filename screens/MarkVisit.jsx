@@ -1,21 +1,26 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const MarkVisit = () => {
     const navigation = useNavigation();
 
-    const handlePress = () => {
-        navigation.navigate('EverboltEngineering'); // Ensure this matches the screen name in the navigator
+    const handlePress = (screenName) => {
+        navigation.navigate(screenName); // Ensure the screen names match your navigator setup
     };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Mark Your Visit:</Text>
 
-            {/* Button with Logo on the Left */}
-            <TouchableOpacity style={styles.button1} onPress={handlePress}>
+            {/* Everbolt Engineering - Dark Green */}
+            <TouchableOpacity style={styles.buttonEngineering} onPress={() => handlePress('EverboltEngineering')}>
                 <Text style={styles.buttonText}>Everbolt Engineering</Text>
+            </TouchableOpacity>
+
+            {/* Everbolt Services - Light Green */}
+            <TouchableOpacity style={styles.buttonServices} onPress={() => handlePress('EverboltServices')}>
+                <Text style={styles.buttonText}>Everbolt Services</Text>
             </TouchableOpacity>
         </View>
     );
@@ -31,12 +36,20 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 30, // Increased margin for better spacing
+        marginBottom: 30,
         textAlign: 'center',
-        color: 'black'
+        color: 'black',
     },
-    button1: {
+    buttonEngineering: {
         backgroundColor: 'darkgreen',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 20,
+        width: '80%',
+        alignItems: 'center',
+    },
+    buttonServices: {
+        backgroundColor: 'green',
         padding: 15,
         borderRadius: 10,
         marginBottom: 20,

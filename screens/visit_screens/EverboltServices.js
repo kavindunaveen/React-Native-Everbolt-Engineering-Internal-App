@@ -10,13 +10,26 @@ import { FIREBASE_DB } from "../../FirebaseConfig";
 import { ref, get } from "firebase/database";
 import axios from "axios";
 
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyzGvbVLoxZqW-WHCnaZ1faopCgneGQ-p4fVhYNKG4k8rQvHlWE3Xbh2Vj6kpYfuEht/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyZyORIbZQ7-oNuBKaa3Cpzoz2mx2PWsokE1oJTPKcYqLmsIWpo_rTdI3WrVFo8DmBz/exec"
+// Visit Type - Subcategory Mapping
+const visitTypeSubcategories = {
+  "Energy Monitoring": ["Load Analysis", "Energy Audit", "Harmonic Analysis"],
+  "Technical Visit": ["System Inspection", "Maintenance", "Troubleshooting"],
+  "Power Panel": ["Capacitor Bank", "VFD", "Control System"],
+  "Lightning arrestors": ["Installation", "Inspection", "Replacement"],
+  "SPD installation": ["Surge Protector", "Grounding", "Wiring Check"],
+  "Industrial Wiring": ["Machine Wiring", "Panel Wiring", "Cable Routing"],
+  "Automation": ["PLC Setup", "SCADA Integration", "Sensor Calibration"],
+  "Earthing": ["Ground Resistance", "Chemical Earthing", "Rod Installation"],
+};
 
-const EverboltEngineering = () => {
+const EverboltServices = () => {
   const [form, setForm] = useState({
     date: new Date(),
-    salesOfficerName: "",
+    engineerName: "",
     companyName: "",
+    visitType: "",  
+    visitSubType: "",  
     visitDetails: "",
     remarks: "",
   });
@@ -28,6 +41,7 @@ const EverboltEngineering = () => {
   const [loading, setLoading] = useState(true);
   const [companies, setCompanies] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [filteredSubcategories, setFilteredSubcategories] = useState([]);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -54,13 +68,13 @@ const EverboltEngineering = () => {
       setDropdownVisible(false);
       return;
     }
-  
+
     const filtered = companies.filter((company) =>
       company.toLowerCase().includes(text.toLowerCase())
     );
-  
+
     setFilteredCompanies(filtered);
-    setDropdownVisible(filtered.length > 0); 
+    setDropdownVisible(filtered.length > 0);
   };
 
   const handleSelectCompany = (company) => {
@@ -74,54 +88,55 @@ const EverboltEngineering = () => {
   const handleChange = (key, value) => {
     setForm((prevForm) => ({
       ...prevForm,
-      [key]: value || "", // Ensure the field is always assigned a value
+      [key]: value || "",
     }));
-  };  
+
+    if (key === "visitType") {
+      setFilteredSubcategories(visitTypeSubcategories[value] || []); 
+      setForm((prevForm) => ({ ...prevForm, visitSubType: "" })); 
+    }
+  };
 
   const handleSubmit = async () => {
-    console.log("Form Data Before Submission:", JSON.stringify(form, null, 2)); // Debugging log
-  
+    console.log("Form Data Before Submission:", JSON.stringify(form, null, 2));
+
     if (
-      form.salesOfficerName.trim() === "" ||
+      form.engineerName.trim() === "" ||
       form.companyName.trim() === "" ||  
       form.visitType.trim() === "" ||
-      form.visitDetails.trim() === ""
+      form.visitSubType.trim() === "" ||
+      form.visitDetails.trim() === "" ||
+      form.remarks.trim() === ""
     ) {
       alert("Please fill in all required fields.");
       return;
     }
-  
+
     setIsSubmitting(true);
-  
+
     try {
       console.log("Sending data to API...");
-  
+
       const response = await axios.post(GOOGLE_SHEET_URL, form, {
-        headers: { 
-          "Content-Type": "application/json" 
-        }
+        headers: { "Content-Type": "application/json" }
       });
-  
+
       console.log("Response:", response.data);
-  
+
       if (response.status === 200) {
         alert("Data submitted successfully!");
-  
-        // Reset form fields after successful submission
         setForm({
           date: new Date(),
-          salesOfficerName: "",
+          engineerName: "",
           companyName: "",
           visitType: "",
+          visitSubType: "",
           visitDetails: "",
           remarks: "",
         });
-  
-        // Reset search query and dropdown
+
         setQuery("");
         setDropdownVisible(false);
-  
-        // Optionally, dismiss the keyboard after submission
         Keyboard.dismiss();
       } else {
         alert("Failed to submit data.");
@@ -132,103 +147,84 @@ const EverboltEngineering = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };  
-  
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView 
-        style={{ flex: 1 }} 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={80} // Adjusts keyboard position properly
-      >
-        <ScrollView 
-          contentContainerStyle={{ flexGrow: 1 }} 
-          keyboardShouldPersistTaps="handled"
-        >
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View style={styles.container}>
-            <Image source={require("../../assets/logo.png")} style={styles.logo} resizeMode="contain" />
+            <Image source={require("../../assets/serviceslogo.png")} style={styles.logo} resizeMode="contain" />
             <Text style={styles.text}>Mark Your Visit</Text>
 
             <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.dateInput}>
               <Text style={styles.dateText}>{formatDate(form.date)}</Text>
             </TouchableOpacity>
 
-            {showPicker && (
-              <DateTimePicker
-                value={form.date}
-                mode="date"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  setShowPicker(false);
-                  if (selectedDate) {
-                    handleChange("date", selectedDate);
-                  }
-                }}
-              />
-            )}
-
             <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={form.salesOfficerName}
-                onValueChange={(itemValue) => handleChange("salesOfficerName", itemValue)}
-                style={styles.picker}
-              >
-                <Picker.Item label="Select Sales Officer" value="" />
-                <Picker.Item label="Ramitha Thimanka" value="Ramitha Thimanka" />
-                <Picker.Item label="Udara Lakshitha" value="Udara Lakshitha" />
-                <Picker.Item label="Pasindu Janith" value="Pasindu Janith" />
-                <Picker.Item label="Sasindu Chamika" value="Sasindu Chamika" />
-                <Picker.Item label="Shanka Sachith" value="Shanka Sachith" />
-                <Picker.Item label="Widura Bandara" value="Widura Bandara" />
+              <Picker selectedValue={form.engineerName} onValueChange={(itemValue) => handleChange("engineerName", itemValue)} style={styles.picker}>
+                <Picker.Item label="Select Engineer Name" value="" />
+                <Picker.Item label="Uditha Prabath" value="Uditha Prabath" />
+                <Picker.Item label="Prasanga Welikala" value = "Prasanga Welikala" />
+                <Picker.Item label="Sandaru Adithya" value = "Sandaru Adithya" />
+                <Picker.Item label="Pasindu Maleesha" value = "Pasindu Maleesha" />
+                <Picker.Item label="Renuka Ravihansa" value = "Renuka Ravihansa" />
+                <Picker.Item label="Kusal Bandara" value = "Kusal Bandara" />
+                <Picker.Item label="Chamara Sandaruwan" value = "Chamara Sandaruwan" />
+                <Picker.Item label="Asanga Sanjeewa" value = "Asanga Sanjeewa" />
               </Picker>
             </View>
 
             <View style={styles.dropdownContainer}>
-            <TextInput
-            style={styles.input}
-            placeholder="Search or Type Company"
-            value={query}
-            onChangeText={(text) => {
-              setQuery(text);  
-              setForm((prevForm) => ({ ...prevForm, companyName: text }));  
-              filterCompanies(text); 
-              }}
-              />
-
-              {loading ? (
-                <ActivityIndicator size="small" color="blue" />
-              ) : (
-                dropdownVisible && (
-                <FlatList
-                data={filteredCompanies}
-                keyExtractor={(item, index) => index.toString()}
-                style={styles.dropdown}
-                renderItem={({ item }) => (
-                <TouchableOpacity onPress={() => handleSelectCompany(item)} style={styles.dropdownItem}>
-                  <Text>{item}</Text>
-                  </TouchableOpacity>
-                  )}
-                  />
-                )
-                )}
-                </View>
+                        <TextInput
+                        style={styles.input}
+                        placeholder="Search or Type Company"
+                        value={query}
+                        onChangeText={(text) => {
+                          setQuery(text);  
+                          setForm((prevForm) => ({ ...prevForm, companyName: text }));  
+                          filterCompanies(text); 
+                          }}
+                          />
+            
+                          {loading ? (
+                            <ActivityIndicator size="small" color="blue" />
+                          ) : (
+                            dropdownVisible && (
+                            <FlatList
+                            data={filteredCompanies}
+                            keyExtractor={(item, index) => index.toString()}
+                            style={styles.dropdown}
+                            renderItem={({ item }) => (
+                            <TouchableOpacity onPress={() => handleSelectCompany(item)} style={styles.dropdownItem}>
+                              <Text>{item}</Text>
+                              </TouchableOpacity>
+                              )}
+                              />
+                            )
+                            )}
+            </View>
 
             <View style={styles.pickerContainer}>
-            <Picker
-            selectedValue={form.visitType} // Ensure this state is properly mapped
-            onValueChange={(itemValue) => handleChange("visitType", itemValue)} // Correctly update visitType
-            style={styles.picker}
-            >
-              <Picker.Item label="Select Visit Type" value="" />
-              <Picker.Item label="Delivery" value="Delivery" />
-              <Picker.Item label="Technical Visit" value="Technical Visit" />
-              <Picker.Item label="Sales Visit" value="Sales Visit" />
-              <Picker.Item label="Payment Collection" value="Payment Collection" />
-              <Picker.Item label="Scheduled Visit" value="Scheduled Visit" />
-              <Picker.Item label="Customer Requested Visit" value="Customer Requested Visit" />
+              <Picker selectedValue={form.visitType} onValueChange={(itemValue) => handleChange("visitType", itemValue)} style={styles.picker}>
+                <Picker.Item label="Select Visit Type" value="" />
+                {Object.keys(visitTypeSubcategories).map((type) => (
+                  <Picker.Item key={type} label={type} value={type} />
+                ))}
               </Picker>
+            </View>
+
+            {filteredSubcategories.length > 0 && (
+              <View style={styles.pickerContainer}>
+                <Picker selectedValue={form.visitSubType} onValueChange={(itemValue) => handleChange("visitSubType", itemValue)} style={styles.picker}>
+                  <Picker.Item label="Select Subcategory" value="" />
+                  {filteredSubcategories.map((sub) => (
+                    <Picker.Item key={sub} label={sub} value={sub} />
+                  ))}
+                </Picker>
               </View>
-    
+            )}
+
             <TextInput
               style={styles.input}
               placeholder="Visit Details"
@@ -237,6 +233,7 @@ const EverboltEngineering = () => {
               multiline
             />
 
+            {/* Added Remarks field below Visit Details */}
             <TextInput
               style={styles.input}
               placeholder="Remarks"
@@ -245,14 +242,8 @@ const EverboltEngineering = () => {
               multiline
             />
 
-            <TouchableOpacity
-              style={[styles.button, isSubmitting && { backgroundColor: "gray" }]}
-              onPress={handleSubmit}
-              disabled={isSubmitting}
-            >
-              <Text style={styles.buttonText}>
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </Text>
+            <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
+              <Text style={styles.buttonText}>{isSubmitting ? "Submitting..." : "Submit"}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -261,7 +252,6 @@ const EverboltEngineering = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
@@ -269,7 +259,7 @@ const styles = StyleSheet.create({
     alignItems: "center", 
     backgroundColor: "#f5f5f5", 
     paddingHorizontal: 20,
-    paddingTop: 65, // Adds slight spacing from the top
+    paddingTop: 40, // Adds slight spacing from the top
   },
   logo: { width: "80%", height: 150, marginBottom: 10 }, // Reduced height slightly
   text: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
@@ -300,11 +290,11 @@ const styles = StyleSheet.create({
     fontSize: 16, backgroundColor: "#fff", marginBottom: 10 
   },
   button: { 
-    backgroundColor: "darkgreen", paddingVertical: 12, 
+    backgroundColor: "green", paddingVertical: 12, 
     paddingHorizontal: 20, borderRadius: 8, 
     width: "90%", alignItems: "center", marginTop: 10 
   },
   buttonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
 });
 
-export default EverboltEngineering;
+export default EverboltServices;

@@ -29,10 +29,11 @@ function HomeScreen() {
   };
 
   const navigateToProfile = () => {
-    navigation.navigate('ProfileScreen'); // Navigate to ProfileScreen
+    navigation.navigate('ProfileScreen');
   };
+
   const navigateToNotificationScreen = () => {
-    navigation.navigate('NotificationScreen'); // Navigate to NotificationScreen
+    navigation.navigate('NotificationScreen');
   };
 
   const buttonScale = new Animated.Value(1);
@@ -71,74 +72,48 @@ function HomeScreen() {
       <Image source={require('../assets/logo.png')} style={styles.logo} />
 
       <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigateToScreen('Attendance')}
-          onPressIn={animateButton}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('Attendance')} onPressIn={animateButton}>
           <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Attendance</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigateToScreen('Quotation')}
-          onPressIn={animateButton}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('Quotation')} onPressIn={animateButton}>
           <FontAwesome5 name="file-invoice-dollar" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Quotation</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigateToScreen('Customerdetails')}
-          onPressIn={animateButton}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('Customerdetails')} onPressIn={animateButton}>
           <FontAwesome5 name="user-friends" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Customer Details</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigateToScreen('Complain')}
-          onPressIn={animateButton}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('Complain')} onPressIn={animateButton}>
           <FontAwesome5 name="exclamation-triangle" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Complain</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={openMeetingRoom}
-          onPressIn={animateButton}
-        >
+        <TouchableOpacity style={styles.button} onPress={openMeetingRoom} onPressIn={animateButton}>
           <FontAwesome5 name="calendar-alt" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Meeting Room</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigateToScreen('MarkVisit')}
-          onPressIn={animateButton}
-        >
+        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('MarkVisit')} onPressIn={animateButton}>
           <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
           <Text style={styles.buttonText}>Mark Visit</Text>
         </TouchableOpacity>
-     </View>
-            <View style={styles.row}>
-       {/* <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigateToScreen('Leaveform')}
-          onPressIn={animateButton}
-        >
-          <FontAwesome5 name="clock" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>OT Request</Text>
-        </TouchableOpacity>*/}
-      </View> 
+      </View>
+
+      {/* New Gate Pass Button */}
+      <View style={styles.row}>
+        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('GatePass')} onPressIn={animateButton}>
+          <FontAwesome5 name="id-badge" size={24} color="#FFFFFF" />
+          <Text style={styles.buttonText}>Gate Pass</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -163,11 +138,11 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   profileImage: {
-    width: 40, // Reduced size
-    height: 40, // Reduced size
-    borderRadius: 20, // Adjusted for the reduced size
-    borderWidth: 0, // Border width
-    borderColor: '#000000', // Black border
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 0,
+    borderColor: '#000000',
   },
   row: {
     flexDirection: 'row',

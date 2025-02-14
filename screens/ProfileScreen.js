@@ -1,232 +1,166 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { useUser, useClerk } from '@clerk/clerk-expo';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
-import { FIREBASE_AUTH } from '../FirebaseConfig';
-import { signOut, onAuthStateChanged } from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MaterialIcons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 
 const ProfileScreen = () => {
-  const [user, setUser] = useState(null);
-  const [employeeId, setEmployeeId] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [avatarUri, setAvatarUri] = useState(null);
-  const navigation = useNavigation();
+  const { user, isSignedIn, isLoaded } = useUser();
+  const { signOut } = useClerk();
+  const navigation = useNavigation(); 
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (firebaseUser) => {
-        if (firebaseUser) {
-          setUser({
-            displayName: firebaseUser.displayName,
-            email: firebaseUser.email,
-            photoURL: firebaseUser.photoURL,
-            uid: firebaseUser.uid,
-          });
-
-          const storedEmployeeId = await AsyncStorage.getItem('employee_id');
-          if (storedEmployeeId) {
-            setEmployeeId(storedEmployeeId);
-          }
-
-          const storedAvatarUri = await AsyncStorage.getItem('avatar_uri');
-          if (storedAvatarUri) {
-            setAvatarUri(storedAvatarUri);
-          }
-        } else {
-          navigation.navigate('Login');
-        }
-        setLoading(false);
-      });
-
-      return () => unsubscribe();
-    };
-
-    fetchUserData();
-  }, [navigation]);
-
-  const handleLogout = async () => {
-    try {
-      await signOut(FIREBASE_AUTH);
-      navigation.navigate('Login');
-    } catch (error) {
-      console.error('Error logging out:', error);
-    }
-  };
-
-  const handleAvatarPress = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      setAvatarUri(uri);
-      await AsyncStorage.setItem('avatar_uri', uri);
-    }
-  };
-
-  const handleRemoveAvatar = async () => {
-    setAvatarUri(null);
-    await AsyncStorage.removeItem('avatar_uri');
-  };
-
-  if (loading) {
+  if (!isLoaded) {
     return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="#0000ff" />
+      <View style={styles.loadingContainer}>
+        <Text>Loading...</Text>
       </View>
     );
   }
 
-  if (!user) {
+  if (!isSignedIn || !user) {
     return (
-      <View style={styles.container}>
+      <View style={styles.loadingContainer}>
         <Text>No user found</Text>
       </View>
     );
   }
 
-  const isEmployeeIdString = typeof employeeId === 'string';
-  const [userId, username] = isEmployeeIdString ? employeeId.split('_') : ['Unknown', 'Unknown'];
+  const handleLogout = async () => {
+    await signOut();
+    navigation.replace('Signup'); 
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.frontText}>User Profile</Text>
-      <View style={styles.profileContainer}>
-        <View style={styles.avatarContainer}>
-          <TouchableOpacity onPress={handleAvatarPress}>
-            {avatarUri || user.photoURL ? (
-              <Image source={{ uri: avatarUri || user.photoURL }} style={styles.avatar} />
-            ) : (
-              <View style={styles.avatarPlaceholder}>
-                <Text style={styles.avatarPlaceholderText}>Add your profile photo</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-          {avatarUri && (
-            <TouchableOpacity style={styles.removeButton} onPress={handleRemoveAvatar}>
-              <Text style={styles.removeButtonText}>Remove</Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={styles.username}>Employee ID: {employeeId.charAt(0).toUpperCase() + employeeId.slice(1)}</Text>
-          <Text style={styles.email}>Email: {user.email}</Text>
-          <Text style={styles.codeContent}>User ID: {user.uid}</Text>
-          <Text style={styles.username}>Everbolt Engineering (Pvt) Ltd</Text>
-        </View>
+    <ScrollView contentContainerStyle={styles.container}>
+      <LinearGradient
+        colors={['#2BB7F1', '#4CAF50']}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.headerBackground}
+      />
+      
+      <View style={styles.logoContainer}>
+        <Image source={require('../assets/logo-design.png')} style={styles.logo} />
       </View>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
-    </View>
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: user.imageUrl }} style={styles.profileImage} />
+        <Text style={styles.username}>{user.fullName || 'Full Name'}</Text>
+      </View>
+
+      <View style={styles.userDetailsContainer}>
+        <View style={styles.infoBox}>
+          <Text style={styles.infoBoxTitle}>Email</Text>
+          <Text style={styles.infoBoxContent}>{user.emailAddresses[0]?.emailAddress || 'No Email'}</Text>
+        </View>
+        <View style={styles.infoBox}>
+          <Text style={styles.infoBoxTitle}>Joined Date</Text>
+          <Text style={styles.infoBoxContent}>{user.createdAt ? new Date(user.createdAt).toDateString() : 'N/A'}</Text>
+        </View>
+
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#E5E5E5',
-    padding: 20,
-    justifyContent: 'space-between',
-  },
-  frontText: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-  },
-  profileContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  avatarContainer: {
-    alignItems: 'center',
-    marginBottom: 55,
-    marginLeft: 10,
-  },
-  avatar: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    borderWidth: 3,
-    borderColor: 'green',
-  },
-  avatarPlaceholder: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: '#ccc',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarPlaceholderText: {
-    fontSize: 20,
-    color: '#fff',
-    textAlign: 'center',
-  },
-  removeButton: {
-    marginTop: 10,
-    backgroundColor: '#FF6347',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-  },
-  removeButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  infoContainer: {
-    alignSelf: 'flex-start',
-    marginTop: 20,
-    marginLeft: 20,
-  },
-  username: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#006400',
-    marginBottom: 25,
-  },
-  email: {
-    fontSize: 18,
-    color: '#000',
-    marginBottom: 25,
-  },
-  userId: {
-    fontSize: 20,
-    color: '#006400',
-    marginBottom: 25,
-    fontWeight: 'bold',
-  },
-  codeContent: {
-    fontSize: 17,
-    marginBottom: 25,
-  },
-  logoutButton: {
-    backgroundColor: '#FF6347',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    elevation: 3,
-    alignSelf: 'center',
-    marginBottom: 100,
-  },
-  logoutButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      backgroundColor: '#F5F5F5',
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    headerBackground: {
+      position: 'absolute',
+      top: 0,
+      width: '100%',
+      height: '40%',
+      borderBottomLeftRadius: 50,
+      borderBottomRightRadius: 50,
+    },
+    logoContainer: {
+      position: 'absolute',
+      top: '3%',
+      alignItems: 'center',
+    },
+    logo: {
+      width: 500,
+      height: 220,
+      resizeMode: 'contain',
+    },
+    imageContainer: {
+      position: 'absolute',
+      top: '28%',
+      alignItems: 'center',
+      paddingVertical: 15,
+    },
+    profileImage: {
+      width: 180,
+      height: 180,
+      borderRadius: 90,
+      borderWidth: 4,
+      borderColor: '#FFF',
+    },
+    username: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#333',
+      marginTop: 10,
+      textAlign: 'center',
+      fontFamily: 'Times New Roman',
+    },
+    userDetailsContainer: {
+      width: '85%',
+      alignItems: 'center',
+      marginTop: 475,
+    },
+    infoBox: {
+      backgroundColor: '#FFF',
+      padding: 15,
+      borderRadius: 15,
+      marginVertical: 10,
+      elevation: 4,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      width: '95%', // Increased width of user detail boxes
+    },
+    infoBoxTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#555',
+    },
+    infoBoxContent: {
+      fontSize: 14,
+      color: '#777',
+      marginTop: 5,
+    },
+    logoutButton: {
+      backgroundColor: '#FF3B30',
+      paddingVertical: 12,
+      paddingHorizontal: 40, // Reduced width of logout button
+      borderRadius: 25,
+      elevation: 4,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      marginTop: 15,
+    },
+    logoutButtonText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#FFF',
+      textAlign: 'center',
+    },
 });
 
 export default ProfileScreen;
