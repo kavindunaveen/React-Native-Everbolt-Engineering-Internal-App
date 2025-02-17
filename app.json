@@ -24,7 +24,7 @@
       "newArchEnabled": false
     },
     "android": {
-      "versionCode": 16,
+      "versionCode": 17,
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
