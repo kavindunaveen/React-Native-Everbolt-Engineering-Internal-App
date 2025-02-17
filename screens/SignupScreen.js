@@ -7,6 +7,8 @@ import { useOAuth, useUser } from '@clerk/clerk-expo';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AuthSession from 'expo-auth-session';
+import { useClerk } from '@clerk/clerk-expo';
+import { SafeAreaView, StatusBar } from 'react-native';
 
 const SignupScreen = () => {
   const redirectUri = AuthSession.makeRedirectUri({
@@ -25,28 +27,23 @@ const SignupScreen = () => {
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
-
-    // Retrieve stored session state
+  
     const checkAuthStatus = async () => {
       const userSession = await AsyncStorage.getItem('userSession');
-      if (userSession) {
+  
+      if (isSignedIn && userSession) {
         navigation.reset({
           index: 0,
           routes: [{ name: 'Homescreen' }],
         });
+      } else {
+        await AsyncStorage.removeItem('userSession'); // Ensure session is cleared
       }
     };
-
-    if (isSignedIn) {
-      AsyncStorage.setItem('userSession', 'true'); // Store session persistently
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Homescreen' }],
-      });
-    } else {
-      checkAuthStatus();
-    }
+  
+    checkAuthStatus();
   }, [isSignedIn]);
+  
 
   const onGoogleSignInPress = async () => {
     setLoading(true);
@@ -66,25 +63,41 @@ const SignupScreen = () => {
       setLoading(false);
     }
   };
+  
+  const { signOut } = useClerk();
+
+const handleLogout = async () => {
+  try {
+    await signOut(); 
+    await AsyncStorage.removeItem('userSession'); 
+
+    setTimeout(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Signup' }],
+      });
+    }, 500);
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+};
+
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform.OS === 'ios' ? 'padding' : null}
-    >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Image source={require('../assets/logo-design-2.png')} style={styles.logo} />
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={onGoogleSignInPress}>
-            <Text style={styles.buttonText}>Sign Up with Google</Text>
-          </TouchableOpacity>
-          <Image source={require('../assets/google.png')} style={styles.googleLogo} />
-          {loading && <ActivityIndicator size="large" color="#0000ff" />}
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
-  );
-};
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#006400' }}>
+    <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} />
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <Image source={require('../assets/logo-design-2.png')} style={styles.logo} />
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button} onPress={onGoogleSignInPress}>
+          <Text style={styles.buttonText}>Sign Up with Google</Text>
+        </TouchableOpacity>
+        <Image source={require('../assets/google.png')} style={styles.googleLogo} />
+      </View>
+    </ScrollView>
+  </SafeAreaView>
+ );
+}
 
 const styles = StyleSheet.create({
   container: {

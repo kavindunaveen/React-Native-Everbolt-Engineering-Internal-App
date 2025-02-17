@@ -46,6 +46,7 @@ function App() {
     <ClerkLoaded>
       <NavigationContainer linking={linking}>
       <Stack.Navigator initialRouteName="Signup">
+        <Stack.Screen name="Signup" component={SignupScreen} options={{ title: 'Create Account' }} />
           <Stack.Screen name="Homescreen" component={Homescreen} options={{ headerShown: false }} />
           <Stack.Screen name="Attendance" component={Attendance} options={{ title: '' }} />
           <Stack.Screen name="Quotation" component={Quotation} options={{ title: '' }} />
@@ -54,7 +55,6 @@ function App() {
           <Stack.Screen name="MarkVisit" component={MarkVisit} options={{ title: '' }} />
           <Stack.Screen name="GatePass" component={GatePassScreen} options={{ title: '' }} />
           <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ title: '' }} />
-          <Stack.Screen name="Signup" component={SignupScreen} options={{ title: 'Create Account' }} />
           <Stack.Screen name="UserAuth" component={UserAuthentication} options={{ title: '' }} />
           <Stack.Screen name="EverboltEngineering" component={EverboltEngineering} options={{ title: '' }} />
           <Stack.Screen name="EverboltServices" component={EverboltServices} options={{ title: '' }} />
