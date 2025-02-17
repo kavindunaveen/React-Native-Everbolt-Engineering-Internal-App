@@ -17,6 +17,7 @@ import Customerdetails from './screens/Customerdetails';
 import Complain from './screens/Complain';
 import MarkVisit from './screens/MarkVisit';
 import SignupScreen from './screens/SignupScreen';
+import UserAuthentication from './screens/UserAuthentication';
 import ProfileScreen from './screens/ProfileScreen';
 import GatePassScreen from './screens/GatePass';
 import OTform from './screens/OTform';
@@ -31,31 +32,20 @@ if (!publishableKey) {
 
 // Deep linking configuration
 const linking = {
-  prefixes: ['everboltapp://', 'https://everbolt.com'],
+  prefixes: ['everboltapp://'],
   config: {
     screens: {
       Homescreen: 'home',
-      Attendance: 'attendance',
-      Quotation: 'quotation',
-      Customerdetails: 'customer-details',
-      Complain: 'complain',
-      MarkVisit: 'mark-visit',
-      GatePass: 'gate-pass',
-      ProfileScreen: 'profile',
       Signup: 'signup',
-      EverboltEngineering: 'everbolt-engineering',
-      EverboltServices: 'everbolt-services',
-      Leaveform: 'leave-form',
-      NotificationScreen: 'notifications',
-    }
-  }
+    },
+  },
 };
 
 function App() {
   return (
     <ClerkLoaded>
       <NavigationContainer linking={linking}>
-        <Stack.Navigator initialRouteName="Signup">
+      <Stack.Navigator initialRouteName="Signup">
           <Stack.Screen name="Homescreen" component={Homescreen} options={{ headerShown: false }} />
           <Stack.Screen name="Attendance" component={Attendance} options={{ title: '' }} />
           <Stack.Screen name="Quotation" component={Quotation} options={{ title: '' }} />
@@ -65,6 +55,7 @@ function App() {
           <Stack.Screen name="GatePass" component={GatePassScreen} options={{ title: '' }} />
           <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ title: '' }} />
           <Stack.Screen name="Signup" component={SignupScreen} options={{ title: 'Create Account' }} />
+          <Stack.Screen name="UserAuth" component={UserAuthentication} options={{ title: '' }} />
           <Stack.Screen name="EverboltEngineering" component={EverboltEngineering} options={{ title: '' }} />
           <Stack.Screen name="EverboltServices" component={EverboltServices} options={{ title: '' }} />
           <Stack.Screen name="Leaveform" component={OTform} options={{ title: 'OT Request' }} />

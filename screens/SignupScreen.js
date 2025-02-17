@@ -5,14 +5,14 @@ import {
 } from 'react-native';
 import { useOAuth, useUser } from '@clerk/clerk-expo';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AuthSession from 'expo-auth-session';
-import Constants from 'expo-constants';
 
 const SignupScreen = () => {
   const redirectUri = AuthSession.makeRedirectUri({
-    native: 'everboltapp://',
-    useProxy: Platform.OS === 'web' ? true : false,
-  });
+    native: 'everboltapp://oauthredirect',
+    useProxy: false, 
+  });  
 
   const { startOAuthFlow } = useOAuth({
     strategy: 'oauth_google',
@@ -24,23 +24,36 @@ const SignupScreen = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    navigation.setOptions({ headerShown: false }); // Hides the top header
-    
+    navigation.setOptions({ headerShown: false });
+
+    // Retrieve stored session state
+    const checkAuthStatus = async () => {
+      const userSession = await AsyncStorage.getItem('userSession');
+      if (userSession) {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Homescreen' }],
+        });
+      }
+    };
+
     if (isSignedIn) {
+      AsyncStorage.setItem('userSession', 'true'); // Store session persistently
       navigation.reset({
         index: 0,
         routes: [{ name: 'Homescreen' }],
       });
+    } else {
+      checkAuthStatus();
     }
   }, [isSignedIn]);
 
   const onGoogleSignInPress = async () => {
     setLoading(true);
     try {
-      console.log('Signing in with Google...');
       const { createdSessionId } = await startOAuthFlow();
-      console.log('Google Sign-In result:', createdSessionId);
       if (createdSessionId) {
+        await AsyncStorage.setItem('userSession', 'true'); // Persist session after login
         navigation.reset({
           index: 0,
           routes: [{ name: 'Homescreen' }],
@@ -72,8 +85,6 @@ const SignupScreen = () => {
     </KeyboardAvoidingView>
   );
 };
-
-export default SignupScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -120,3 +131,5 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   }
 });
+
+export default SignupScreen;
