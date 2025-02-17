@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { 
   View, Text, TextInput, TouchableOpacity, Alert, 
-  StyleSheet, Image, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform 
-} from 'react-native'; 
+  StyleSheet, Image, SafeAreaView, StatusBar, 
+  KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard 
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const authorizedNumbers = [
@@ -36,51 +37,60 @@ const UserAuthentication = () => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#006400' }}>
+    <SafeAreaView style={styles.safeArea}>
       <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} />
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-        
-        {/* Logo at the Top */}
-        <Image source={require('../assets/logo-design-2.png')} style={styles.logo} />
 
-        {/* Centered Input Field & Button */}
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            keyboardType="phone-pad"
-            placeholder="Enter phone number"
-            placeholderTextColor="#ccc"
-            value={phoneNumber}
-            onChangeText={setPhoneNumber}
-          />
+      {/* Dismiss keyboard when tapping outside input */}
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === "ios" ? "padding" : "height"} 
+          style={styles.container}
+        >
+          <Image source={require('../assets/logo-design-2.png')} style={styles.logo} />
 
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
-        </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              keyboardType="phone-pad"
+              placeholder="Enter phone number"
+              placeholderTextColor="#aaa"
+              value={phoneNumber}
+              onChangeText={setPhoneNumber}
+            />
 
-      </KeyboardAvoidingView>
+            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#006400',
+  },
   container: {
     flex: 1,
-    justifyContent: 'center', // Centers everything vertically
-    alignItems: 'center', // Centers horizontally
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
   },
   logo: {
-    width: 410,
-    height: 255,
-    marginBottom: 250,
+    width: 300,
+    height: 200,
+    marginBottom: 50,
+    resizeMode: 'contain',
   },
   inputContainer: {
-    width: '80%',
+    width: '100%',
     alignItems: 'center',
   },
   input: {
-    width: '100%',
+    width: '90%',
     padding: 15,
     borderWidth: 1,
     borderColor: '#F4BC1C',
@@ -90,17 +100,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
     color: '#000',
+    elevation: 2, // slight shadow for better visibility
   },
   button: {
     backgroundColor: '#F4BC1C',
-    padding: 15,
+    paddingVertical: 15,
+    paddingHorizontal: 20,
     borderRadius: 25,
     alignItems: 'center',
     width: '75%',
+    elevation: 3, // subtle shadow for a modern look
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });
