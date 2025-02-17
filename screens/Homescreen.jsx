@@ -1,35 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, Linking, Animated, Easing, Dimensions } from 'react-native';
+import { 
+  StyleSheet, View, Text, TouchableOpacity, Image, Linking, 
+  Animated, Easing, Dimensions, SafeAreaView, StatusBar 
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SafeAreaView, StatusBar } from 'react-native';
+import { useUser } from '@clerk/clerk-expo'; // Import Clerk user authentication
 
 const { width } = Dimensions.get('window');
 
 function HomeScreen() {
-  const [avatarUri, setAvatarUri] = useState(null);
+  const { user } = useUser(); // Get user details from Clerk
   const navigation = useNavigation();
+  const [avatarUri, setAvatarUri] = useState(null);
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
-    
+
     const fetchAvatarUri = async () => {
-      const storedAvatarUri = await AsyncStorage.getItem('avatar_uri');
-      if (storedAvatarUri) {
-        setAvatarUri(storedAvatarUri);
+      if (user?.imageUrl) {
+        setAvatarUri(user.imageUrl); // Set the profile image from Clerk
+      } else {
+        const storedAvatarUri = await AsyncStorage.getItem('avatar_uri');
+        if (storedAvatarUri) {
+          setAvatarUri(storedAvatarUri);
+        }
       }
     };
-    fetchAvatarUri();
-  }, []);
 
-  const navigateToScreen = (screenName) => {
-    navigation.navigate(screenName);
-  };
- 
-  const openMeetingRoom = () => {
-    Linking.openURL('https://outlook.office365.com/owa/calendar/MeetingRoom@everbolt.lk/bookings/');
-  };
+    fetchAvatarUri();
+  }, [user]); // Re-run when the user changes
 
   const navigateToProfile = () => {
     navigation.navigate('ProfileScreen');
@@ -60,67 +61,74 @@ function HomeScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#1A3819' }}>
-    <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} />
-    
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.profileButton} onPress={navigateToProfile}>
-        {avatarUri ? (
-          <Image source={{ uri: avatarUri }} style={styles.profileImage} />
-        ) : (
-          <FontAwesome5 name="user-circle" size={24} color="#FFFFFF" />
-        )}
-      </TouchableOpacity>
+      <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} />
 
-      <TouchableOpacity style={styles.notificatoinButton} onPress={navigateToNotificationScreen}>
-        <FontAwesome5 name="bell" size={24} color="#FFFFFF" />
-      </TouchableOpacity>
+      <View style={styles.container}>
 
-      <Image source={require('../assets/logo.png')} style={styles.logo} />
-
-      <View style={styles.row}>
-        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('Attendance')} onPressIn={animateButton}>
-          <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Attendance</Text>
+        {/* Profile Button (Top Right) */}
+        <TouchableOpacity style={styles.profileButton} onPress={navigateToProfile}>
+          {avatarUri ? (
+            <Image source={{ uri: avatarUri }} style={styles.profileImage} />
+          ) : (
+            <FontAwesome5 name="user-circle" size={40} color="#FFFFFF" />
+          )}
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('Quotation')} onPressIn={animateButton}>
-          <FontAwesome5 name="file-invoice-dollar" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Quotation</Text>
+        {/* Notification Button (Top Left) */}
+        <TouchableOpacity style={styles.notificationButton} onPress={navigateToNotificationScreen}>
+          <FontAwesome5 name="bell" size={24} color="#FFFFFF" />
         </TouchableOpacity>
+
+        {/* Logo */}
+        <Image source={require('../assets/logo.png')} style={styles.logo} />
+
+        {/* Buttons Grid */}
+        <View style={styles.row}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Attendance')} onPressIn={animateButton}>
+            <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
+            <Text style={styles.buttonText}>Attendance</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Quotation')} onPressIn={animateButton}>
+            <FontAwesome5 name="file-invoice-dollar" size={24} color="#FFFFFF" />
+            <Text style={styles.buttonText}>Quotation</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.row}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Customerdetails')} onPressIn={animateButton}>
+            <FontAwesome5 name="user-friends" size={24} color="#FFFFFF" />
+            <Text style={styles.buttonText}>Customer Details</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Complain')} onPressIn={animateButton}>
+            <FontAwesome5 name="exclamation-triangle" size={24} color="#FFFFFF" />
+            <Text style={styles.buttonText}>Complain</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.row}>
+          <TouchableOpacity style={styles.button} onPress={() => Linking.openURL('https://outlook.office365.com/owa/calendar/MeetingRoom@everbolt.lk/bookings/')} onPressIn={animateButton}>
+            <FontAwesome5 name="calendar-alt" size={24} color="#FFFFFF" />
+            <Text style={styles.buttonText}>Meeting Room</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MarkVisit')} onPressIn={animateButton}>
+            <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
+            <Text style={styles.buttonText}>Mark Visit</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.row}>
+          {/* Locked Gate Pass Button */}
+          <TouchableOpacity style={[styles.button, styles.disabledButton]} disabled={true}>
+            <FontAwesome5 name="id-badge" size={24} color="#B0B0B0" />
+            <Text style={styles.disabledButtonText}>Gate Pass</Text>
+          </TouchableOpacity>
+        </View>
+
       </View>
-
-      <View style={styles.row}>
-        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('Customerdetails')} onPressIn={animateButton}>
-          <FontAwesome5 name="user-friends" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Customer Details</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('Complain')} onPressIn={animateButton}>
-          <FontAwesome5 name="exclamation-triangle" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Complain</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.row}>
-        <TouchableOpacity style={styles.button} onPress={openMeetingRoom} onPressIn={animateButton}>
-          <FontAwesome5 name="calendar-alt" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Meeting Room</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('MarkVisit')} onPressIn={animateButton}>
-          <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Mark Visit</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.row}>
-        <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('GatePass')} onPressIn={animateButton}>
-          <FontAwesome5 name="id-badge" size={24} color="#FFFFFF" />
-          <Text style={styles.buttonText}>Gate Pass</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </SafeAreaView>
+    </SafeAreaView>
   );
 }
 
@@ -147,8 +155,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    borderWidth: 0,
-    borderColor: '#000000',
+    borderWidth: 1,
+    borderColor: '#FFFFFF',
+  },
+  notificationButton: {
+    position: 'absolute',
+    top: 70,
+    left: 10,
+    padding: 10,
   },
   row: {
     flexDirection: 'row',
@@ -170,11 +184,15 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: 'center',
   },
-  notificatoinButton: {
-    position: 'absolute',
-    top: 70,
-    left: 10,
-    padding: 10,
+  disabledButton: {
+    backgroundColor: '#555555', 
+    opacity: 0.6, 
+  },
+  disabledButtonText: {
+    color: '#B0B0B0', 
+    fontSize: 16,
+    marginTop: 5,
+    textAlign: 'center',
   },
 });
 

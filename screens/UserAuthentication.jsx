@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { 
+  View, Text, TextInput, TouchableOpacity, Alert, 
+  StyleSheet, Image, SafeAreaView, StatusBar, KeyboardAvoidingView, Platform 
+} from 'react-native'; 
 import { useNavigation } from '@react-navigation/native';
 
-// List of authorized phone numbers (converted to 10-digit format with '0' prefix)
 const authorizedNumbers = [
   '0777425964', '0770744794', '0770744918', '0742877537', '0770744934',
   '0769062500', '0778871280', '0761457332', '0771677222', '0766630223',
@@ -17,28 +18,17 @@ const authorizedNumbers = [
   '0765563315', '0763527245', '0763874007', '0764816205', '0742866901',
   '0774137988', '0742865346', '0769156426', '0765273205', '0743048165',
   '0775027617', '0743921222', '0769640726', '0764377260', '0760266221',
-  '0776572227', '0761023908', '0740628044'
+  '0776572227', '0761023908', '0740628044', '0723881260'
 ];
 
 const UserAuthentication = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const storedPhoneNumber = await AsyncStorage.getItem('userPhoneNumber');
-      if (storedPhoneNumber && authorizedNumbers.includes(storedPhoneNumber)) {
-        navigation.replace('Homescreen'); // Redirect to Home if logged in
-      }
-    };
-    checkAuth();
-  }, []);
-
-  const handleLogin = async () => {
+  const handleSubmit = () => {
     const formattedPhone = phoneNumber.startsWith('0') ? phoneNumber : '0' + phoneNumber;
+
     if (authorizedNumbers.includes(formattedPhone.trim())) {
-      // Store session and redirect
-      await AsyncStorage.setItem('userPhoneNumber', formattedPhone);
       navigation.replace('Signup');
     } else {
       Alert.alert("Access Denied", "This number is not authorized.");
@@ -46,53 +36,73 @@ const UserAuthentication = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Enter Your Phone Number</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="phone-pad"
-        placeholder="Enter phone number"
-        value={phoneNumber}
-        onChangeText={setPhoneNumber}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#006400' }}>
+      <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} />
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
+        
+        {/* Logo at the Top */}
+        <Image source={require('../assets/logo-design-2.png')} style={styles.logo} />
+
+        {/* Centered Input Field & Button */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            keyboardType="phone-pad"
+            placeholder="Enter phone number"
+            placeholderTextColor="#ccc"
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+          />
+
+          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>Submit</Text>
+          </TouchableOpacity>
+        </View>
+
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f4f4f4',
-    padding: 20
+    justifyContent: 'center', // Centers everything vertically
+    alignItems: 'center', // Centers horizontally
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 20
+  logo: {
+    width: 410,
+    height: 255,
+    marginBottom: 250,
+  },
+  inputContainer: {
+    width: '80%',
+    alignItems: 'center',
   },
   input: {
-    width: '90%',
-    padding: 10,
+    width: '100%',
+    padding: 15,
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    marginBottom: 15
+    borderColor: '#F4BC1C',
+    borderRadius: 25,
+    backgroundColor: '#fff',
+    textAlign: 'center',
+    fontSize: 16,
+    marginBottom: 20,
+    color: '#000',
   },
   button: {
-    backgroundColor: '#007BFF',
-    padding: 12,
-    borderRadius: 8
+    backgroundColor: '#F4BC1C',
+    padding: 15,
+    borderRadius: 25,
+    alignItems: 'center',
+    width: '75%',
   },
   buttonText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 16,
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
 });
 
 export default UserAuthentication;
