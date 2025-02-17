@@ -4,6 +4,7 @@
     "slug": "everbolt-app",
     "description": "Everbolt Engineering internal app",
     "version": "2.0.5",
+    "runtimeVersion": "2.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -42,7 +43,8 @@
               "pathPrefix": "/"
             },
             {
-              "scheme": "everboltapp"
+              "scheme": "everboltapp",
+              "host": "oauthredirect"
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
@@ -62,9 +64,7 @@
       "expo-secure-store",
       "expo-font"
     ],
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    
     "updates": {
       "url": "https://u.expo.dev/28a72db4-d19a-4ea1-b693-a8c76e5a032e",
       "fallbackToCacheTimeout": 0

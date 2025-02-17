@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { 
   View, Text, StyleSheet, TextInput, TouchableOpacity, 
   FlatList, ActivityIndicator, Image, KeyboardAvoidingView, 
-  Platform, ScrollView, Keyboard, TouchableWithoutFeedback 
+  Platform, ScrollView, Keyboard, TouchableWithoutFeedback, 
+  ActionSheetIOS
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
@@ -17,6 +18,7 @@ const EverboltEngineering = () => {
     date: new Date(),
     salesOfficerName: "",
     companyName: "",
+    visitType: "",
     visitDetails: "",
     remarks: "",
   });
@@ -28,6 +30,24 @@ const EverboltEngineering = () => {
   const [loading, setLoading] = useState(true);
   const [companies, setCompanies] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const salesOfficers = [
+    "Ramitha Thimanka",
+    "Udara Lakshitha",
+    "Pasindu Janith",
+    "Sasindu Chamika",
+    "Shanka Sachith",
+    "Widura Bandara"
+  ];
+
+  const visitTypes = [
+    "Delivery",
+    "Technical Visit",
+    "Sales Visit",
+    "Payment Collection",
+    "Scheduled Visit",
+    "Customer Requested Visit"
+  ];
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -54,11 +74,9 @@ const EverboltEngineering = () => {
       setDropdownVisible(false);
       return;
     }
-  
     const filtered = companies.filter((company) =>
       company.toLowerCase().includes(text.toLowerCase())
     );
-  
     setFilteredCompanies(filtered);
     setDropdownVisible(filtered.length > 0); 
   };
@@ -74,13 +92,25 @@ const EverboltEngineering = () => {
   const handleChange = (key, value) => {
     setForm((prevForm) => ({
       ...prevForm,
-      [key]: value || "", // Ensure the field is always assigned a value
+      [key]: value || "",
     }));
-  };  
+  };
+
+  const showIOSPicker = (key, options) => {
+    ActionSheetIOS.showActionSheetWithOptions(
+      {
+        options: [...options, "Cancel"],
+        cancelButtonIndex: options.length,
+      },
+      (buttonIndex) => {
+        if (buttonIndex < options.length) {
+          handleChange(key, options[buttonIndex]);
+        }
+      }
+    );
+  };
 
   const handleSubmit = async () => {
-    console.log("Form Data Before Submission:", JSON.stringify(form, null, 2)); // Debugging log
-  
     if (
       form.salesOfficerName.trim() === "" ||
       form.companyName.trim() === "" ||  
@@ -90,24 +120,18 @@ const EverboltEngineering = () => {
       alert("Please fill in all required fields.");
       return;
     }
-  
+
     setIsSubmitting(true);
-  
+
     try {
-      console.log("Sending data to API...");
-  
       const response = await axios.post(GOOGLE_SHEET_URL, form, {
         headers: { 
           "Content-Type": "application/json" 
         }
       });
-  
-      console.log("Response:", response.data);
-  
+
       if (response.status === 200) {
         alert("Data submitted successfully!");
-  
-        // Reset form fields after successful submission
         setForm({
           date: new Date(),
           salesOfficerName: "",
@@ -116,12 +140,8 @@ const EverboltEngineering = () => {
           visitDetails: "",
           remarks: "",
         });
-  
-        // Reset search query and dropdown
         setQuery("");
         setDropdownVisible(false);
-  
-        // Optionally, dismiss the keyboard after submission
         Keyboard.dismiss();
       } else {
         alert("Failed to submit data.");
@@ -132,19 +152,16 @@ const EverboltEngineering = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };  
-  
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView 
         style={{ flex: 1 }} 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={80} // Adjusts keyboard position properly
+        keyboardVerticalOffset={80}
       >
-        <ScrollView 
-          contentContainerStyle={{ flexGrow: 1 }} 
-          keyboardShouldPersistTaps="handled"
-        >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View style={styles.container}>
             <Image source={require("../../assets/logo.png")} style={styles.logo} resizeMode="contain" />
             <Text style={styles.text}>Mark Your Visit</Text>
@@ -167,35 +184,40 @@ const EverboltEngineering = () => {
               />
             )}
 
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={form.salesOfficerName}
-                onValueChange={(itemValue) => handleChange("salesOfficerName", itemValue)}
-                style={styles.picker}
-              >
-                <Picker.Item label="Select Sales Officer" value="" />
-                <Picker.Item label="Ramitha Thimanka" value="Ramitha Thimanka" />
-                <Picker.Item label="Udara Lakshitha" value="Udara Lakshitha" />
-                <Picker.Item label="Pasindu Janith" value="Pasindu Janith" />
-                <Picker.Item label="Sasindu Chamika" value="Sasindu Chamika" />
-                <Picker.Item label="Shanka Sachith" value="Shanka Sachith" />
-                <Picker.Item label="Widura Bandara" value="Widura Bandara" />
-              </Picker>
-            </View>
-
+            {/* Sales Officer Picker */}
+            <TouchableOpacity
+              style={styles.pickerContainer}
+              onPress={() => Platform.OS === "ios" ? showIOSPicker("salesOfficerName", salesOfficers) : null}
+            >
+              {Platform.OS === "android" ? (
+                <Picker
+                  selectedValue={form.salesOfficerName}
+                  onValueChange={(itemValue) => handleChange("salesOfficerName", itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select Sales Officer" value="" />
+                  {salesOfficers.map((officer, index) => (
+                    <Picker.Item key={index} label={officer} value={officer} />
+                  ))}
+                </Picker>
+              ) : (
+                <Text style={styles.dateText}>{form.salesOfficerName || "Select Sales Officer"}</Text>
+              )}
+            </TouchableOpacity>
+            
             <View style={styles.dropdownContainer}>
-            <TextInput
-            style={styles.input}
-            placeholder="Search or Type Company"
-            value={query}
-            onChangeText={(text) => {
+              <TextInput
+              style={styles.input}
+              placeholder="Search or Type Company"
+              value={query}
+              onChangeText={(text) => {
               setQuery(text);  
               setForm((prevForm) => ({ ...prevForm, companyName: text }));  
               filterCompanies(text); 
-              }}
-              />
-
-              {loading ? (
+            }}
+            />
+            
+            {loading ? (
                 <ActivityIndicator size="small" color="blue" />
               ) : (
                 dropdownVisible && (
@@ -213,22 +235,27 @@ const EverboltEngineering = () => {
                 )}
                 </View>
 
-            <View style={styles.pickerContainer}>
-            <Picker
-            selectedValue={form.visitType} // Ensure this state is properly mapped
-            onValueChange={(itemValue) => handleChange("visitType", itemValue)} // Correctly update visitType
-            style={styles.picker}
+            {/* Visit Type Picker */}
+            <TouchableOpacity
+              style={styles.pickerContainer}
+              onPress={() => Platform.OS === "ios" ? showIOSPicker("visitType", visitTypes) : null}
             >
-              <Picker.Item label="Select Visit Type" value="" />
-              <Picker.Item label="Delivery" value="Delivery" />
-              <Picker.Item label="Technical Visit" value="Technical Visit" />
-              <Picker.Item label="Sales Visit" value="Sales Visit" />
-              <Picker.Item label="Payment Collection" value="Payment Collection" />
-              <Picker.Item label="Scheduled Visit" value="Scheduled Visit" />
-              <Picker.Item label="Customer Requested Visit" value="Customer Requested Visit" />
-              </Picker>
-              </View>
-    
+              {Platform.OS === "android" ? (
+                <Picker
+                  selectedValue={form.visitType}
+                  onValueChange={(itemValue) => handleChange("visitType", itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select Visit Type" value="" />
+                  {visitTypes.map((type, index) => (
+                    <Picker.Item key={index} label={type} value={type} />
+                  ))}
+                </Picker>
+              ) : (
+                <Text style={styles.dateText}>{form.visitType || "Select Visit Type"}</Text>
+              )}
+            </TouchableOpacity>
+
             <TextInput
               style={styles.input}
               placeholder="Visit Details"
@@ -245,14 +272,8 @@ const EverboltEngineering = () => {
               multiline
             />
 
-            <TouchableOpacity
-              style={[styles.button, isSubmitting && { backgroundColor: "gray" }]}
-              onPress={handleSubmit}
-              disabled={isSubmitting}
-            >
-              <Text style={styles.buttonText}>
-                {isSubmitting ? "Submitting..." : "Submit"}
-              </Text>
+            <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={isSubmitting}>
+              <Text style={styles.buttonText}>{isSubmitting ? "Submitting..." : "Submit"}</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -261,50 +282,106 @@ const EverboltEngineering = () => {
   );
 };
 
-
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    justifyContent: "flex-start", // Shift content upwards
-    alignItems: "center", 
-    backgroundColor: "#f5f5f5", 
+    justifyContent: "flex-start",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
     paddingHorizontal: 20,
-    paddingTop: 65, // Adds slight spacing from the top
+    paddingTop: Platform.OS === "ios" ? 80 : 40, // More top padding for iOS
   },
-  logo: { width: "80%", height: 150, marginBottom: 10 }, // Reduced height slightly
-  text: { fontSize: 22, fontWeight: "bold", marginBottom: 10 },
-  dateInput: { 
-    width: "90%", height: 50, borderWidth: 1, 
-    borderColor: "#ccc", borderRadius: 8, 
-    backgroundColor: "#fff", justifyContent: "center", 
-    alignItems: "center", marginBottom: 10 
-  },
-  dateText: { fontSize: 16, color: "#000" },
-  pickerContainer: { 
-    width: "90%", height: 50, borderWidth: 1, 
-    borderColor: "#ccc", borderRadius: 8, 
-    backgroundColor: "#fff", justifyContent: "center", 
+  logo: { 
+    width: "80%", 
+    height: Platform.OS === "ios" ? 130 : 150, 
     marginBottom: 10 
   },
-  picker: { width: "100%", height: 50 },
-  dropdownContainer: { width: "90%", position: "relative" },
-  dropdown: { 
-    position: "absolute", top: 50, left: 0, right: 0, 
-    backgroundColor: "white", borderWidth: 1, borderColor: "#ccc", 
-    borderRadius: 8, maxHeight: 150, zIndex: 10 
+  text: { 
+    fontSize: 22, 
+    fontWeight: "bold", 
+    marginBottom: Platform.OS === "ios" ? 15 : 10 
   },
-  dropdownItem: { padding: 10, borderBottomWidth: 1, borderBottomColor: "#ddd" },
+  dateInput: { 
+    width: "90%", 
+    height: 50, 
+    borderWidth: 1, 
+    borderColor: "#ccc", 
+    borderRadius: 8, 
+    backgroundColor: "#fff", 
+    justifyContent: "center", 
+    alignItems: "center", 
+    marginBottom: 10,
+    shadowColor: Platform.OS === "ios" ? "#000" : "transparent", 
+    shadowOpacity: Platform.OS === "ios" ? 0.2 : 0,
+    shadowRadius: Platform.OS === "ios" ? 3 : 0,
+    shadowOffset: Platform.OS === "ios" ? { width: 0, height: 2 } : { width: 0, height: 0 },
+  },
+  dateText: { 
+    fontSize: 16, 
+    color: "#000" 
+  },
+  pickerContainer: { 
+    width: "90%", 
+    height: 50, 
+    borderWidth: 1, 
+    borderColor: "#ccc", 
+    borderRadius: 8, 
+    backgroundColor: "#fff", 
+    justifyContent: "center", 
+    marginBottom: 10,
+    paddingLeft: Platform.OS === "ios" ? 15 : 0, // Moves selected name forward ONLY on iOS
+  },
+  picker: { 
+    width: "100%", 
+    height: 50, 
+  },
+  dropdownContainer: { 
+    width: "90%", 
+    position: "relative" 
+  },
+  dropdown: { 
+    position: "absolute", 
+    top: 50, 
+    left: 0, 
+    right: 0, 
+    backgroundColor: "white", 
+    borderWidth: 1, 
+    borderColor: "#ccc", 
+    borderRadius: 8, 
+    maxHeight: 150, 
+    zIndex: 10 
+  },
+  dropdownItem: { 
+    padding: 10, 
+    borderBottomWidth: 1, 
+    borderBottomColor: "#ddd" 
+  },
   input: { 
-    width: "90%", height: 50, borderWidth: 1, 
-    borderColor: "#ccc", borderRadius: 8, paddingHorizontal: 15, 
-    fontSize: 16, backgroundColor: "#fff", marginBottom: 10 
+    width: "90%", 
+    height: 50, 
+    borderWidth: 1, 
+    borderColor: "#ccc", 
+    borderRadius: 8, 
+    paddingHorizontal: 15, 
+    fontSize: 16, 
+    backgroundColor: "#fff", 
+    marginBottom: 10,
+    textAlign: Platform.OS === "ios" ? "center" : "left", // Center text ONLY on iOS
   },
   button: { 
-    backgroundColor: "darkgreen", paddingVertical: 12, 
-    paddingHorizontal: 20, borderRadius: 8, 
-    width: "90%", alignItems: "center", marginTop: 10 
+    backgroundColor: Platform.OS === "ios" ? "green" : "green", 
+    paddingVertical: 12, 
+    paddingHorizontal: 20, 
+    borderRadius: 8, 
+    width: "90%", 
+    alignItems: "center", 
+    marginTop: 10 
   },
-  buttonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
+  buttonText: { 
+    color: "#fff", 
+    fontSize: 18, 
+    fontWeight: "bold" 
+  },
 });
 
 export default EverboltEngineering;
