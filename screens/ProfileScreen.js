@@ -33,7 +33,7 @@ const ProfileScreen = () => {
       
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Signup' }], 
+        routes: [{ name: 'Authentication' }]
       
       });
     } catch (error) {
