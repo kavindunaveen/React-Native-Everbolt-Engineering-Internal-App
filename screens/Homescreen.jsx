@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Image, Linking, Animated, Eas
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView, StatusBar } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -11,6 +12,8 @@ function HomeScreen() {
   const navigation = useNavigation();
 
   useEffect(() => {
+    navigation.setOptions({ headerShown: false });
+    
     const fetchAvatarUri = async () => {
       const storedAvatarUri = await AsyncStorage.getItem('avatar_uri');
       if (storedAvatarUri) {
@@ -56,6 +59,9 @@ function HomeScreen() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#1A3819' }}>
+    <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} />
+    
     <View style={styles.container}>
       <TouchableOpacity style={styles.profileButton} onPress={navigateToProfile}>
         {avatarUri ? (
@@ -107,7 +113,6 @@ function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* New Gate Pass Button */}
       <View style={styles.row}>
         <TouchableOpacity style={styles.button} onPress={() => navigateToScreen('GatePass')} onPressIn={animateButton}>
           <FontAwesome5 name="id-badge" size={24} color="#FFFFFF" />
@@ -115,6 +120,7 @@ function HomeScreen() {
         </TouchableOpacity>
       </View>
     </View>
+  </SafeAreaView>
   );
 }
 

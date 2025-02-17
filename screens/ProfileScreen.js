@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'rea
 import { useUser, useClerk } from '@clerk/clerk-expo';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = () => {
   const { user, isSignedIn, isLoaded } = useUser();
@@ -22,13 +23,24 @@ const ProfileScreen = () => {
       <View style={styles.loadingContainer}>
         <Text>No user found</Text>
       </View>
-    );
-  }
-
-  const handleLogout = async () => {
-    await signOut();
-    navigation.replace('Signup'); 
+    )
   };
+  
+  const handleLogout = async () => {
+    try {
+      await signOut(); 
+      await AsyncStorage.removeItem('userSession'); 
+      
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Signup' }], 
+      
+      });
+    } catch (error) {
+    console.error('Logout error:', error);
+  }
+};
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
