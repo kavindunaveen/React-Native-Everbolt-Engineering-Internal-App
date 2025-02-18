@@ -39,8 +39,6 @@ const UserAuthentication = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} />
-
-      {/* Dismiss keyboard when tapping outside input */}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <KeyboardAvoidingView 
           behavior={Platform.OS === "ios" ? "padding" : "height"} 
@@ -77,20 +75,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
   },
   logo: {
-    width: 300,
-    height: 200,
-    marginBottom: 50,
-    resizeMode: 'contain',
+    width: 410,
+    height: 255,
+    marginBottom: 250,
   },
   inputContainer: {
-    width: '100%',
+    width: '80%',
     alignItems: 'center',
   },
   input: {
-    width: '90%',
+    width: '100%',
     padding: 15,
     borderWidth: 1,
     borderColor: '#F4BC1C',
@@ -100,20 +96,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 20,
     color: '#000',
-    elevation: 2, // slight shadow for better visibility
   },
   button: {
     backgroundColor: '#F4BC1C',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    padding: 15,
     borderRadius: 25,
     alignItems: 'center',
     width: '75%',
-    elevation: 3, // subtle shadow for a modern look
   },
   buttonText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
