@@ -113,7 +113,7 @@ function HomeScreen() {
             <Text style={styles.buttonText}>Meeting Room</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('MarkVisit')} onPressIn={animateButton}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('VisitSelection')} onPressIn={animateButton}>
             <FontAwesome5 name="clipboard-list" size={24} color="#FFFFFF" />
             <Text style={styles.buttonText}>Mark Visit</Text>
           </TouchableOpacity>

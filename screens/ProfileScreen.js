@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { useUser, useClerk } from '@clerk/clerk-expo';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = () => {
@@ -23,23 +24,22 @@ const ProfileScreen = () => {
       <View style={styles.loadingContainer}>
         <Text>No user found</Text>
       </View>
-    )
-  };
-  
+    );
+  }
+
   const handleLogout = async () => {
     try {
       await signOut(); 
-      await AsyncStorage.removeItem('userSession'); 
-      
+      await AsyncStorage.removeItem('UserAuthenticationPassed'); 
+  
       navigation.reset({
         index: 0,
-        routes: [{ name: 'Authentication' }]
-      
+        routes: [{ name: 'UserAuthentication' }], 
       });
     } catch (error) {
-    console.error('Logout error:', error);
-  }
-};
+      console.error('Logout error:', error);
+    }
+  };
 
 
   return (
@@ -79,100 +79,100 @@ const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      backgroundColor: '#F5F5F5',
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    headerBackground: {
-      position: 'absolute',
-      top: 0,
-      width: '100%',
-      height: '40%',
-      borderBottomLeftRadius: 50,
-      borderBottomRightRadius: 50,
-    },
-    logoContainer: {
-      position: 'absolute',
-      top: '3%',
-      alignItems: 'center',
-    },
-    logo: {
-      width: 500,
-      height: 220,
-      resizeMode: 'contain',
-    },
-    imageContainer: {
-      position: 'absolute',
-      top: '28%',
-      alignItems: 'center',
-      paddingVertical: 15,
-    },
-    profileImage: {
-      width: 180,
-      height: 180,
-      borderRadius: 90,
-      borderWidth: 4,
-      borderColor: '#FFF',
-    },
-    username: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#333',
-      marginTop: 10,
-      textAlign: 'center',
-      fontFamily: 'Times New Roman',
-    },
-    userDetailsContainer: {
-      width: '85%',
-      alignItems: 'center',
-      marginTop: 475,
-    },
-    infoBox: {
-      backgroundColor: '#FFF',
-      padding: 15,
-      borderRadius: 15,
-      marginVertical: 10,
-      elevation: 4,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      width: '95%', // Increased width of user detail boxes
-    },
-    infoBoxTitle: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: '#555',
-    },
-    infoBoxContent: {
-      fontSize: 14,
-      color: '#777',
-      marginTop: 5,
-    },
-    logoutButton: {
-      backgroundColor: '#FF3B30',
-      paddingVertical: 12,
-      paddingHorizontal: 40, // Reduced width of logout button
-      borderRadius: 25,
-      elevation: 4,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      marginTop: 15,
-    },
-    logoutButtonText: {
-      fontSize: 16,
-      fontWeight: 'bold',
-      color: '#FFF',
-      textAlign: 'center',
-    },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerBackground: {
+    position: 'absolute',
+    top: 0,
+    width: '100%',
+    height: hp('30%'),
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+  },
+  logoContainer: {
+    position: 'absolute',
+    top: hp('3%'),
+    alignItems: 'center',
+  },
+  logo: {
+    width: 500,
+    height: 220,
+    resizeMode: 'contain',
+  },
+  imageContainer: {
+    position: 'absolute',
+    top: hp('25%'),
+    alignItems: 'center',
+    paddingVertical: 15,
+  },
+  profileImage: {
+    width: wp('40%'),
+    height: wp('40%'),
+    borderRadius: wp('20%'),
+    borderWidth: 4,
+    borderColor: '#FFF',
+  },
+  username: {
+    fontSize: hp('3%'),
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 10,
+    textAlign: 'center',
+    fontFamily: Platform.OS === 'ios' ? 'Avenir' : 'Roboto',
+  },
+  userDetailsContainer: {
+    width: wp('90%'),
+    alignItems: 'center',
+    marginTop: hp('55%'),
+  },
+  infoBox: {
+    backgroundColor: '#FFF',
+    padding: wp('4%'),
+    borderRadius: 15,
+    marginVertical: 10,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    width: '100%',
+  },
+  infoBoxTitle: {
+    fontSize: hp('2%'),
+    fontWeight: 'bold',
+    color: '#555',
+  },
+  infoBoxContent: {
+    fontSize: hp('1.8%'),
+    color: '#777',
+    marginTop: 5,
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    paddingVertical: hp('2%'),
+    paddingHorizontal: wp('10%'),
+    borderRadius: 25,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    marginTop: 15,
+  },
+  logoutButtonText: {
+    fontSize: hp('2%'),
+    fontWeight: 'bold',
+    color: '#FFF',
+    textAlign: 'center',
+  },
 });
 
 export default ProfileScreen;

@@ -20,10 +20,10 @@ export default function Complain() {
 
     const sendComplaint = async () => {
         if (!customerName || !complaint) {
-            Alert.alert('Error', 'Please fill in all required fields');
+            Alert.alert('දෝෂයක්', 'කරුණාකර අවශ්‍ය සියලු තොරතුරු පුරවන්න');
             return;
         }
-
+    
         setIsLoading(true); // Start loading
         try {
             const response = await fetch('https://script.google.com/macros/s/AKfycbxzJfcVlaaJVWWAJU-706aCFzRA6LNT8pOeYcqDweB3ByuQbOtNopXqrmoGkzvhra9aMw/exec', {
@@ -33,10 +33,10 @@ export default function Complain() {
                 },
                 body: `customerName=${encodeURIComponent(customerName)}&partNo=${encodeURIComponent(partNo)}&complaint=${encodeURIComponent(complaint)}`
             });
-
+    
             const result = await response.text();
             if (response.ok) {
-                Alert.alert('Success', 'Complaint sent successfully');
+                Alert.alert('සාර්ථකයි', 'ඔබගේ පැමිණිල්ල සාර්ථකව යවා ඇත!');
                 setCustomerName('');
                 setPartNo('');
                 setComplaint('');
@@ -44,48 +44,52 @@ export default function Complain() {
                 throw new Error(result);
             }
         } catch (error) {
-            console.error('Error sending email:', error);
-            Alert.alert('Error', `An error occurred: ${error.toString()}`);
+            console.error('Error sending complaint:', error);
+            Alert.alert('දෝෂයක්', `දෝෂයක් ඇතිවිය: ${error.toString()}`);
         } finally {
             setIsLoading(false); // Stop loading regardless of the outcome
         }
-    };
-
+    };    
+    
     return (
         <KeyboardAvoidingView
-          style={{ flex: 1 }}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-          <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>File a Complaint</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Customer/Company Name"
-                value={customerName}
-                onChangeText={setCustomerName}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Part No (Optional)"
-                value={partNo}
-                onChangeText={setPartNo}
-            />
-            <TextInput
-                style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
-                placeholder="Your Complaint"
-                value={complaint}
-                onChangeText={setComplaint}
-                multiline
-            />
-            {isLoading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-                <TouchableOpacity style={styles.button} onPress={sendComplaint}>
-                    <Text style={styles.buttonText}>Submit Complaint</Text>
-                </TouchableOpacity>
-            )}
-          </ScrollView>
-        </KeyboardAvoidingView>
+  style={{ flex: 1 }}
+  behavior={Platform.OS === "ios" ? "padding" : "height"}
+>
+  <ScrollView contentContainerStyle={styles.container}>
+    <Text style={styles.title}>පැමිණිලි පුරවන්න:</Text>
+    
+    <TextInput
+      style={styles.input}
+      placeholder="පාරිභෝගිකයා/සමාගමෙ නම"
+      value={customerName}
+      onChangeText={setCustomerName}
+    />
+    
+    <TextInput
+      style={styles.input}
+      placeholder="ආංශ අංකය (අත්‍යාවශ්‍ය නොවේ)"
+      value={partNo}
+      onChangeText={setPartNo}
+    />
+    
+    <TextInput
+      style={[styles.input, { height: 100, textAlignVertical: 'top' }]}
+      placeholder="පැමිණිල්ලේ විස්තරය"
+      value={complaint}
+      onChangeText={setComplaint}
+      multiline
+    />
+    
+    {isLoading ? (
+      <ActivityIndicator size="large" color="#0000ff" />
+    ) : (
+      <TouchableOpacity style={styles.button} onPress={sendComplaint}>
+        <Text style={styles.buttonText}>පැමිණිල්ල යවන්න</Text>
+      </TouchableOpacity>
+    )}
+  </ScrollView>
+  </KeyboardAvoidingView>
     );
 }
 

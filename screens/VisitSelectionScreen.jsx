@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const MarkVisit = () => {
+const VisitSelectionScreen = () => {
     const navigation = useNavigation();
 
     const handlePress = (screenName) => {
@@ -11,18 +11,22 @@ const MarkVisit = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Mark Your Visit:</Text>
+            <Text style={styles.title}>Select Company:</Text>
 
             {/* Everbolt Engineering - Dark Green */}
-            <TouchableOpacity style={styles.buttonEngineering} onPress={() => handlePress('EverboltEngineering')}>
-                <Text style={styles.buttonText}>Sales Department</Text>
+            <TouchableOpacity style={styles.buttonEngineering} onPress={() => handlePress('MarkVisit')}>
+                <Text style={styles.buttonText}>Everbolt Engineering</Text>
             </TouchableOpacity>
 
             {/* Everbolt Services - Light Green */}
-            <TouchableOpacity style={styles.buttonEngineering} onPress={() => handlePress('EverboltDelivery')}>
-                <Text style={styles.buttonText}>Stores Department</Text>
+            <TouchableOpacity style={styles.buttonServices} onPress={() => handlePress('EverboltServices')}>
+                <Text style={styles.buttonText}>Everbolt Services</Text>
             </TouchableOpacity>
 
+            {/* Everbolt Services - Light Green */}
+            <TouchableOpacity style={styles.buttonCDI} onPress={() => handlePress('CDIElectricals')}>
+                <Text style={styles.buttonText}>CDI Electricals</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -57,6 +61,14 @@ const styles = StyleSheet.create({
         width: '80%',
         alignItems: 'center',
     },
+    buttonCDI: {
+        backgroundColor: '#089fb1',
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 20,
+        width: '80%',
+        alignItems: 'center',
+      },
     buttonText: {
         color: '#fff',
         fontSize: 18,
@@ -64,4 +76,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MarkVisit;
+export default VisitSelectionScreen;

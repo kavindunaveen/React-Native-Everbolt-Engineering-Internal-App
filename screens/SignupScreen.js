@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  View, Text, ActivityIndicator, 
-  ScrollView, Platform, KeyboardAvoidingView, Alert, StyleSheet, TouchableOpacity, Image 
+  View, Text, ScrollView, Alert, StyleSheet, 
+  TouchableOpacity, Image, ActivityIndicator 
 } from 'react-native';
 import { useOAuth, useUser } from '@clerk/clerk-expo';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as AuthSession from 'expo-auth-session';
 import { useClerk } from '@clerk/clerk-expo';
 import { SafeAreaView, StatusBar } from 'react-native';
@@ -13,44 +12,34 @@ import { SafeAreaView, StatusBar } from 'react-native';
 const SignupScreen = () => {
   const redirectUri = AuthSession.makeRedirectUri({
     native: 'everboltapp://oauthredirect',
-    useProxy: false, 
-  });  
+    useProxy: false,
+  });
 
   const { startOAuthFlow } = useOAuth({
     strategy: 'oauth_google',
     redirectUrl: redirectUri,
   });
 
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
-  
-    const checkAuthStatus = async () => {
-      const userSession = await AsyncStorage.getItem('userSession');
-  
-      if (isSignedIn && userSession) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Homescreen' }],
-        });
-      } else {
-        await AsyncStorage.removeItem('userSession'); // Ensure session is cleared
-      }
-    };
-  
-    checkAuthStatus();
-  }, [isSignedIn]);
-  
+
+    if (isLoaded && isSignedIn) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Homescreen' }],
+      });
+    }
+  }, [isSignedIn, isLoaded]);
 
   const onGoogleSignInPress = async () => {
     setLoading(true);
     try {
       const { createdSessionId } = await startOAuthFlow();
       if (createdSessionId) {
-        await AsyncStorage.setItem('userSession', 'true'); // Persist session after login
         navigation.reset({
           index: 0,
           routes: [{ name: 'Homescreen' }],
@@ -63,41 +52,46 @@ const SignupScreen = () => {
       setLoading(false);
     }
   };
-  
+
   const { signOut } = useClerk();
 
-const handleLogout = async () => {
-  try {
-    await signOut(); 
-    await AsyncStorage.removeItem('userSession'); 
-
-    setTimeout(() => {
+  const handleLogout = async () => {
+    try {
+      await signOut();
       navigation.reset({
         index: 0,
         routes: [{ name: 'Signup' }],
       });
-    }, 500);
-  } catch (error) {
-    console.error('Logout error:', error);
-  }
-};
-
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#006400' }}>
-    <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} />
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <Image source={require('../assets/logo-design-2.png')} style={styles.logo} />
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={onGoogleSignInPress}>
-          <Text style={styles.buttonText}>Sign Up with Google</Text>
-        </TouchableOpacity>
-        <Image source={require('../assets/google.png')} style={styles.googleLogo} />
-      </View>
-    </ScrollView>
-  </SafeAreaView>
- );
-}
+      <StatusBar backgroundColor="transparent" barStyle="light-content" translucent={true} />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Image source={require('../assets/logo-design-2.png')} style={styles.logo} />
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#fff" style={{ marginTop: 20 }} />
+        ) : (
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={onGoogleSignInPress}>
+              <Text style={styles.buttonText}>Sign Up with Google</Text>
+            </TouchableOpacity>
+
+            <Image source={require('../assets/google.png')} style={styles.googleLogo} />
+
+            <TouchableOpacity onPress={() => navigation.navigate("UserSignup")}>
+              <Text style={styles.linkText}>Can't sign in with Google?</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -113,7 +107,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: 'absolute',
-    bottom: 100,
+    bottom: 80,
     width: '100%',
     alignItems: 'center',
   },
@@ -128,6 +122,14 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  linkText: {
+    color: 'white',
+    textDecorationLine: 'underline',
+    fontSize: 16,
+    marginTop: 5,
+    alignSelf: 'center',
+    bottom: -10,
   },
   logo: {
     width: 410,

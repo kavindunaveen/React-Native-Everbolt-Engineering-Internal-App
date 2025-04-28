@@ -10,29 +10,18 @@ import { FIREBASE_DB } from "../../FirebaseConfig";
 import { ref, get } from "firebase/database";
 import axios from "axios";
 
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbziaKZFcxY2Y7rqEBNBCgCc_EXDWN6ZZtJXk8lz7e5D8cgmUqz0qxl90BG411lf5fOE/exec";
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxeQITFdDRPsrRWzojX7aY8d3Md6JXnxlAl-haJw3k1uFZx5ETRWTUf-hcTiJhty4QC9w/exec";
 
-const departmentTypeSubcategories = {
-  "Sales Department": ["Kumuditha Kalpage", "Ramith Thiwanka", "Udara Lakshitha", "Pasindu Janith", "Sasindu Chamika", "Shanka Sachith"],
-  "Product Support Department": ["Widura Bandara", "Aruna Lakshan", "Nuwan Hansini"],
-};
-
-const visitTypes = [
-  "Delivery",
-  "Technical Visit",
-  "Sales Visit",
-  "Payment Collection",
-  "Scheduled Visit",
-  "Customer Requested Visit"
+const salesOfficerName = [
+  "Hirusha Pawan",
+  "Imeshana Sammani"
 ];
 
-const EverboltEngineering = () => {
+const CDIElectricals = () => {
   const [form, setForm] = useState({
     date: new Date(),
-    department: "",
     salesOfficerName: "",
     companyName: "",
-    visitType: "",
     visitDetails: "",
     remarks: "",
   });
@@ -44,7 +33,6 @@ const EverboltEngineering = () => {
   const [loading, setLoading] = useState(true);
   const [companies, setCompanies] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [filteredSalesOfficers, setFilteredSalesOfficers] = useState([]);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -86,16 +74,14 @@ const EverboltEngineering = () => {
     setDropdownVisible(false);
   };
 
-  const formatDate = (date) => date ? date.toISOString().split("T")[0] : "";
-
   const handleDateChange = (event, selectedDate) => {
     if (selectedDate) {
       setForm((prevForm) => ({
         ...prevForm,
-        date: selectedDate, // Update the form state with the new date
+        date: selectedDate,
       }));
     }
-    setShowPicker(false); // Hide picker after selection
+    setShowPicker(false);
   };
 
   const handleChange = (key, value) => {
@@ -103,56 +89,35 @@ const EverboltEngineering = () => {
       ...prevForm,
       [key]: value || "",
     }));
-
-    if (key === "department") {
-      setFilteredSalesOfficers(departmentTypeSubcategories[value] || []);
-      setForm((prevForm) => ({ ...prevForm, salesOfficerName: "" }));
-    }
   };
 
   const handleSubmit = async () => {
-    // Log form state for debugging
-    console.log("Form Data Before Validation:", form);
-  
-    // Trim all fields to prevent issues caused by extra spaces
     const trimmedForm = {
-      date: form.date, // Ensure the date remains a valid object
-      department: form.department.trim(),
+      date: form.date,
       salesOfficerName: form.salesOfficerName.trim(),
       companyName: form.companyName.trim(),
-      visitType: form.visitType.trim(),
       visitDetails: form.visitDetails.trim(),
       remarks: form.remarks.trim(),
     };
-  
-    // Check if any required fields are empty
-    if (
-      !trimmedForm.department ||
-      !trimmedForm.salesOfficerName ||
-      !trimmedForm.companyName ||
-      !trimmedForm.visitType ||
-      !trimmedForm.visitDetails
-    ) {
+
+    if (!trimmedForm.salesOfficerName || !trimmedForm.companyName || !trimmedForm.visitDetails) {
       alert("Please fill in all required fields.");
       return;
     }
-  
+
     setIsSubmitting(true);
-  
+
     try {
-      console.log("Submitting Data:", trimmedForm);
       const response = await axios.post(GOOGLE_SHEET_URL, trimmedForm, {
         headers: { "Content-Type": "application/json" }
       });
-  
+
       if (response.status === 200) {
         alert("Data submitted successfully!");
         setForm({
-          date: new Date(), // Reset date to today
-          department: "",
+          date: new Date(),
           salesOfficerName: "",
           companyName: "",
-          visitType: "",
           visitDetails: "",
           remarks: "",
         });
@@ -168,15 +133,15 @@ const EverboltEngineering = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };  
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
           <View style={styles.container}>
-            <Image source={require("../../assets/logo.png")} style={styles.logo} resizeMode="contain" />
-            <Text style={styles.text}>Mark Your Sales Visit:</Text>
+            <Image source={require("../../assets/cdi-logo.png")} style={styles.logo} resizeMode="contain" />
+            <Text style={styles.text}>Mark Your Visit:</Text>
 
             <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.dateInput}>
               <Text style={styles.dateText}>{form.date.toISOString().split("T")[0]}</Text>
@@ -187,87 +152,52 @@ const EverboltEngineering = () => {
                 value={form.date}
                 mode="date"
                 display="default"
-                onChange={(event, selectedDate) => {
-                  setShowPicker(false);
-                  if (selectedDate) {
-                    handleChange("date", selectedDate);
-                  }
-                }}
+                onChange={handleDateChange}
               />
             )}
 
-           {/* Department Picker */}
-           <View style={styles.pickerContainer}>
-            <Picker
-            selectedValue={form.department}
-            onValueChange={(itemValue) => handleChange("department", itemValue)}
-            style={styles.picker}
-            >
-              <Picker.Item label="Select Department" value="" />
-              {Object.keys(departmentTypeSubcategories).map((dept, index) => (
-                <Picker.Item key={index} label={dept} value={dept} />
+            <View style={styles.pickerContainer}>
+              <Picker
+                selectedValue={form.salesOfficerName}
+                onValueChange={(value) => handleChange("salesOfficerName", value)}
+                style={styles.picker}
+              >
+                <Picker.Item label="Select Sales Officer" value="" />
+                {salesOfficerName.map((officer, index) => (
+                  <Picker.Item key={index} label={officer} value={officer} />
                 ))}
-                </Picker>
-                </View>
-                
-                {/* Sales Officer Picker (Filtered by Department) */}
-                {filteredSalesOfficers.length > 0 && (
-                  <View style={styles.pickerContainer}>
-                    <Picker
-                    selectedValue={form.salesOfficerName}
-                    onValueChange={(itemValue) => handleChange("salesOfficerName", itemValue)}
-                    style={styles.picker}
-                    >
-                      <Picker.Item label="Select Sales Officer" value="" />
-                      {filteredSalesOfficers.map((officer, index) => (
-                        <Picker.Item key={index} label={officer} value={officer} />
-                        ))}
-                        </Picker>
-                        </View>
-                      )}
+              </Picker>
+            </View>
 
-                      <View style={styles.dropdownContainer}>
-                        <TextInput
-                        style={styles.input}
-                        placeholder="Search or Type Company"
-                        value={query}
-                        onChangeText={(text) => {
-                        setQuery(text);  
-                        setForm((prevForm) => ({ ...prevForm, companyName: text }));  
-                        filterCompanies(text); 
-                        }}
-                        />
-                        {loading ? (
-                        <ActivityIndicator size="small" color="blue" />
-                      ) : (
-                        dropdownVisible && (
-                        <FlatList
-                        data={filteredCompanies}
-                        keyExtractor={(item, index) => index.toString()}
-                        style={styles.dropdown}
-                        renderItem={({ item }) => (
-                        <TouchableOpacity onPress={() => handleSelectCompany(item)} style={styles.dropdownItem}>
-                          <Text>{item}</Text>
-                        </TouchableOpacity>
-                        )}
-                        />
-                      )
-                      )}
-                      </View>
-                      
-                      {/* Visit Type Picker */}
-                      <View style={styles.pickerContainer}>
-                        <Picker
-                        selectedValue={form.visitType}
-                        onValueChange={(itemValue) => handleChange("visitType", itemValue)}
-                        style={styles.picker}
-                        >
-                          <Picker.Item label="Select Visit Type" value="" />
-                          {visitTypes.map((type, index) => (
-                            <Picker.Item key={index} label={type} value={type} />
-                            ))}
-                            </Picker>
-                            </View>
+            <View style={styles.dropdownContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Search or Type Company"
+                value={query}
+                onChangeText={(text) => {
+                  setQuery(text);
+                  setForm((prevForm) => ({ ...prevForm, companyName: text }));
+                  filterCompanies(text);
+                }}
+              />
+              {loading ? (
+                <ActivityIndicator size="small" color="blue" />
+              ) : (
+                dropdownVisible && (
+                  <FlatList
+                    data={filteredCompanies}
+                    keyExtractor={(item, index) => index.toString()}
+                    style={styles.dropdown}
+                    renderItem={({ item }) => (
+                      <TouchableOpacity onPress={() => handleSelectCompany(item)} style={styles.dropdownItem}>
+                        <Text>{item}</Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                )
+              )}
+            </View>
+
             <TextInput
               style={styles.input}
               placeholder="Visit Details"
@@ -301,7 +231,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#f5f5f5",
     paddingHorizontal: 20,
-    paddingTop: Platform.OS === "ios" ? 80 : 40, // More top padding for iOS
+    paddingTop: Platform.OS === "ios" ? 80 : 40,
+    marginTop:30
   },
   logo: { 
     width: "80%", 
@@ -340,15 +271,15 @@ const styles = StyleSheet.create({
     borderRadius: 8, 
     backgroundColor: "#fff",  
     justifyContent: "center", 
-    paddingHorizontal: 10,  // Ensure text has spacing
+    paddingHorizontal: 10,
     marginBottom: 10,
   },
-    picker: { 
+  picker: { 
     width: "100%", 
     height: 50, 
     color: "#000",  
-    fontSize: 16,  // Ensures text is readable
-    textAlign: "left",  // Aligns text correctly
+    fontSize: 16,
+    textAlign: "left",
   },
   dropdownContainer: { 
     width: "90%", 
@@ -381,10 +312,10 @@ const styles = StyleSheet.create({
     fontSize: 16, 
     backgroundColor: "#fff", 
     marginBottom: 10,
-    textAlign: Platform.OS === "ios" ? "center" : "left", // Center text ONLY on iOS
+    textAlign: Platform.OS === "ios" ? "center" : "left", 
   },
   button: { 
-    backgroundColor: Platform.OS === "ios" ? "green" : "green", 
+    backgroundColor: Platform.OS === "ios" ? "#089fb1" : "#089fb1", 
     paddingVertical: 12, 
     paddingHorizontal: 20, 
     borderRadius: 8, 
@@ -399,4 +330,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EverboltEngineering;
+export default CDIElectricals;
